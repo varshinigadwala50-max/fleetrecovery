@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FleetGuard — Robot Fleet Recovery</title>
+
+<style>
+:root{
+  --bg:#07111f;
+  --panel:#0c1929;
+  --panel2:#101f32;
+  --border:#1c344d;
+  --text:#e8f1fb;
+  --muted:#7f96ad;
+  --cyan:#35d7ff;
+  --green:#36e29a;
+  --yellow:#ffc857;
+  --red:#ff5470;
+  --purple:#9d7cff;
+  --blue:#4e8cff;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 80% 0%,rgba(53,215,255,.08),transparent 30%),
+    radial-gradient(circle at 0% 100%,rgba(157,124,255,.07),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+.app{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  border-right:1px solid var(--border);
+  background:rgba(5,13,24,.88);
+  padding:24px 16px;
+  position:sticky;
+  top:0;
+  height:100vh;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:5px 10px 30px;
+}
+
+.logoIcon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  color:#06121e;
+  font-weight:900;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  box-shadow:0 0 30px rgba(53,215,255,.2);
+}
+
+.logoText{
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+.logoText span{
+  color:var(--cyan);
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.navItem{
+  padding:12px 13px;
+  border-radius:10px;
+  color:var(--muted);
+  font-size:13px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.navItem.active{
+  background:rgba(53,215,255,.1);
+  color:var(--cyan);
+  border:1px solid rgba(53,215,255,.15);
+}
+
+.system{
+  position:absolute;
+  bottom:22px;
+  left:20px;
+  right:20px;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:rgba(255,255,255,.02);
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:inline-block;
+  background:var(--green);
+  box-shadow:0 0 10px var(--green);
+  margin-right:7px;
+}
+
+/* MAIN */
+
+main{
+  min-width:0;
+  padding:26px 30px 40px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+
+h1{
+  margin:0;
+  font-size:24px;
+  letter-spacing:-.5px;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:6px;
+}
+
+.headerRight{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.live{
+  border:1px solid rgba(54,226,154,.3);
+  color:var(--green);
+  padding:8px 11px;
+  border-radius:20px;
+  font-size:11px;
+  background:rgba(54,226,154,.06);
+}
+
+.emergency{
+  border:0;
+  color:white;
+  padding:10px 15px;
+  border-radius:9px;
+  font-weight:700;
+  background:linear-gradient(135deg,#ff5470,#ff7a59);
+  box-shadow:0 8px 25px rgba(255,84,112,.15);
+}
+
+.grid{
+  display:grid;
+  gap:16px;
+}
+
+.kpis{
+  grid-template-columns:repeat(5,1fr);
+}
+
+.card{
+  background:linear-gradient(145deg,rgba(17,33,52,.95),rgba(8,20,34,.95));
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:17px;
+  box-shadow:0 10px 35px rgba(0,0,0,.12);
+}
+
+.kpiLabel{
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.kpiValue{
+  font-size:26px;
+  font-weight:800;
+  margin-top:7px;
+}
+
+.kpiTrend{
+  font-size:10px;
+  margin-top:6px;
+  color:var(--green);
+}
+
+.dashboard{
+  grid-template-columns:1.35fr .9fr;
+  margin-top:16px;
+}
+
+.cardHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.cardTitle{
+  font-size:13px;
+  font-weight:750;
+}
+
+.cardTag{
+  color:var(--muted);
+  font-size:10px;
+}
+
+/* ROBOTS */
+
+.robots{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.robot{
+  padding:13px;
+  border-radius:11px;
+  border:1px solid var(--border);
+  background:#0a1727;
+  position:relative;
+  overflow:hidden;
+  transition:.3s;
+}
+
+.robot:hover{
+  transform:translateY(-2px);
+  border-color:#31506d;
+}
+
+.robot.failed{
+  border-color:rgba(255,84,112,.65);
+  background:rgba(255,84,112,.055);
+}
+
+.robot.recovering{
+  border-color:rgba(255,200,87,.6);
+}
+
+.robotTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.robotName{
+  font-size:12px;
+  font-weight:750;
+}
+
+.status{
+  font-size:9px;
+  padding:4px 6px;
+  border-radius:5px;
+  color:#06121e;
+  font-weight:800;
+  background:var(--green);
+}
+
+.status.warn{
+  background:var(--yellow);
+}
+
+.status.bad{
+  background:var(--red);
+  color:white;
+}
+
+.robotIcon{
+  font-size:28px;
+  margin:14px 0 8px;
+}
+
+.bar{
+  height:5px;
+  border-radius:5px;
+  background:#172b41;
+  overflow:hidden;
+  margin-top:6px;
+}
+
+.fill{
+  height:100%;
+  border-radius:5px;
+  background:linear-gradient(90deg,var(--cyan),var(--green));
+  transition:width .7s;
+}
+
+.barLabel{
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:9px;
+  margin-top:10px;
+}
+
+/* GRAPH */
+
+.graph{
+  height:300px;
+  position:relative;
+  overflow:hidden;
+  border-radius:10px;
+  background:
+    linear-gradient(rgba(53,215,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(53,215,255,.035) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+
+.node{
+  position:absolute;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  font-weight:800;
+  border:2px solid var(--cyan);
+  background:#0a1c2d;
+  box-shadow:0 0 20px rgba(53,215,255,.15);
+  z-index:2;
+  transition:.5s;
+}
+
+.node.fail{
+  border-color:var(--red);
+  box-shadow:0 0 30px rgba(255,84,112,.35);
+  background:rgba(255,84,112,.08);
+}
+
+.node.affected{
+  border-color:var(--yellow);
+  box-shadow:0 0 24px rgba(255,200,87,.25);
+}
+
+.node.ok{
+  border-color:var(--green);
+}
+
+.edge{
+  position:absolute;
+  height:2px;
+  background:linear-gradient(90deg,var(--cyan),rgba(53,215,255,.05));
+  transform-origin:left center;
+  opacity:.6;
+  z-index:1;
+}
+
+.legend{
+  display:flex;
+  gap:15px;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:9px;
+}
+
+.legend i{
+  display:inline-block;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  margin-right:4px;
+}
+
+/* LOWER */
+
+.lower{
+  grid-template-columns:1.2fr .8fr;
+  margin-top:16px;
+}
+
+.timeline{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:240px;
+  overflow:auto;
+}
+
+.event{
+  display:grid;
+  grid-template-columns:55px 1fr;
+  gap:12px;
+  font-size:11px;
+}
+
+.eventTime{
+  color:var(--muted);
+}
+
+.eventBody{
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.eventBody strong{
+  display:block;
+  margin-bottom:3px;
+}
+
+.eventBody span{
+  color:var(--muted);
+}
+
+.tasks{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.task{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  padding:10px 11px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:#0a1727;
+}
+
+.taskName{
+  font-size:11px;
+  font-weight:700;
+}
+
+.taskMeta{
+  color:var(--muted);
+  font-size:9px;
+  margin-top:3px;
+}
+
+.taskStatus{
+  font-size:9px;
+  color:var(--green);
+}
+
+.taskStatus.migrate{
+  color:var(--yellow);
+}
+
+.progress{
+  height:3px;
+  background:#172b41;
+  margin-top:6px;
+  border-radius:4px;
+}
+
+.progress div{
+  height:100%;
+  background:var(--cyan);
+}
+
+/* CONTROLS */
+
+.controls{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.failureButtons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.failBtn{
+  background:#111f30;
+  color:#d9e7f4;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:9px 12px;
+  font-size:10px;
+}
+
+.failBtn:hover{
+  border-color:var(--red);
+  color:#fff;
+}
+
+.recoveryBtn{
+  width:100%;
+  padding:12px;
+  border:1px solid rgba(53,215,255,.25);
+  color:var(--cyan);
+  background:rgba(53,215,255,.07);
+  border-radius:9px;
+  font-weight:700;
+}
+
+.recoveryBtn:hover{
+  background:rgba(53,215,255,.13);
+}
+
+.alert{
+  display:none;
+  margin-bottom:16px;
+  border:1px solid rgba(255,84,112,.4);
+  background:rgba(255,84,112,.08);
+  padding:12px 15px;
+  border-radius:11px;
+  color:#ffdce2;
+  font-size:11px;
+}
+
+.alert.show{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.alert strong{
+  color:#ff8295;
+}
+
+.mini{
+  color:var(--muted);
+  font-size:10px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .dashboard,.lower{grid-template-columns:1fr}
+}
+
+@media(max-width:800px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  main{padding:18px}
+  .robots{grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .controls{grid-template-columns:1fr}
+}
+
+/* INTERACTIVE VIEWS */
+.navItem{
+  width:100%;
+  border:0;
+  text-align:left;
+  background:transparent;
+  font-family:inherit;
+  cursor:pointer;
+}
+.view{display:none}
+.view.active{display:block}
+.chartBox{
+  height:320px;
+  position:relative;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#081625;
+  padding:12px;
+}
+.chartBox canvas{width:100%;height:100%;display:block}
+.statGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:16px;
+}
+.statMini{
+  padding:15px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#0a1727;
+}
+.statMini b{display:block;font-size:22px;margin-top:6px}
+.actionGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.actionCard{
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#0a1727;
+}
+.actionCard button{
+  margin-top:12px;
+  width:100%;
+  padding:9px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#111f30;
+  color:#d9e7f4;
+}
+.tableWrap{overflow:auto}
+.dataTable{width:100%;border-collapse:collapse;font-size:11px}
+.dataTable th,.dataTable td{
+  padding:11px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  text-align:left;
+}
+.dataTable th{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px}
+.badText{color:var(--red)}
+.goodText{color:var(--green)}
+.warnText{color:var(--yellow)}
+@media(max-width:800px){
+  .statGrid,.actionGrid{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+
+  <div class="logo">
+    <div class="logoIcon">F</div>
+    <div class="logoText">Fleet<span>Guard</span></div>
+  </div>
+
+  <div class="nav">
+    <button class="navItem active" onclick="showView('command',this)">◉ Command Center</button>
+    <button class="navItem" onclick="showView('fleet',this)">▣ Fleet Health</button>
+    <button class="navItem" onclick="showView('failure',this)">⌁ Failure Graph</button>
+    <button class="navItem" onclick="showView('recovery',this)">↻ Recovery Plans</button>
+    <button class="navItem" onclick="showView('missions',this)">◆ Missions</button>
+    <button class="navItem" onclick="showView('simulation',this)">◌ Simulation</button>
+  </div>
+
+  <div class="system">
+    <div style="font-size:11px;font-weight:700;margin-bottom:7px">
+      <span class="dot"></span>Simulation Online
+    </div>
+    <div class="mini">Digital twin synchronized</div>
+  </div>
+
+</aside>
+
+
+<main>
+
+<header class="header">
+
+  <div>
+    <h1>Fleet Command Center</h1>
+    <div class="subtitle">
+      Autonomous fleet recovery under cascading failures
+    </div>
+  </div>
+
+  <div class="headerRight">
+    <div class="live"><span class="dot"></span>LIVE SIMULATION</div>
+    <button class="emergency" onclick="emergencyRecovery()">
+      ⚡ Emergency Recovery
+    </button>
+  </div>
+
+</header>
+
+
+<div id="alert" class="alert">
+  <div>
+    <strong>CASCADE DETECTED</strong><br>
+    <span id="alertText">Robot failure is propagating through shared resources.</span>
+  </div>
+  <div style="font-size:20px">⚠</div>
+</div>
+
+
+<!-- KPI ROW -->
+
+<section class="grid kpis">
+
+  <div class="card">
+    <div class="kpiLabel">Mission Completion</div>
+    <div class="kpiValue" id="completion">98.7%</div>
+    <div class="kpiTrend" id="completionTrend">▲ 2.4% after rebalancing</div>
+  </div>
+
+  <div class="card">
+    <div class="kpiLabel">Fleet Availability</div>
+    <div class="kpiValue" id="availability">100%</div>
+    <div class="kpiTrend">8 / 8 operational</div>
+  </div>
+
+  <div class="card">
+    <div class="kpiLabel">Predicted Failures</div>
+    <div class="kpiValue" id="predicted">1</div>
+    <div class="kpiTrend" style="color:var(--yellow)">AI risk model active</div>
+  </div>
+
+  <div class="card">
+    <div class="kpiLabel">Tasks Migrated</div>
+    <div class="kpiValue" id="migrated">0</div>
+    <div class="kpiTrend">Minimal reassignment strategy</div>
+  </div>
+
+  <div class="card">
+    <div class="kpiLabel">Resource Efficiency</div>
+    <div class="kpiValue" id="efficiency">94%</div>
+    <div class="kpiTrend">Battery-aware scheduling</div>
+  </div>
+
+</section>
+
+
+<!-- FLEET + GRAPH -->
+
+<section class="grid dashboard">
+
+<div class="card">
+
+  <div class="cardHeader">
+    <div class="cardTitle">Fleet Health</div>
+    <div class="cardTag">Telemetry • 1.2 sec ago</div>
+  </div>
+
+  <div class="robots" id="robots"></div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="cardHeader">
+    <div class="cardTitle">Failure Propagation Graph</div>
+    <div class="cardTag">Dependency model</div>
+  </div>
+
+  <div class="graph" id="graph">
+
+    <div class="node ok" id="n1" style="left:35px;top:110px">R-01</div>
+    <div class="node ok" id="n2" style="left:150px;top:40px">TASK-A</div>
+    <div class="node ok" id="n3" style="left:150px;top:185px">R-02</div>
+    <div class="node ok" id="n4" style="left:270px;top:110px">RESOURCE</div>
+    <div class="node ok" id="n5" style="left:390px;top:40px">TASK-B</div>
+    <div class="node ok" id="n6" style="left:390px;top:185px">R-03</div>
+
+  </div>
+
+  <div class="legend">
+    <span><i style="background:var(--green)"></i>Healthy</span>
+    <span><i style="background:var(--yellow)"></i>Affected</span>
+    <span><i style="background:var(--red)"></i>Failed</span>
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- EVENTS + TASKS -->
+
+<section class="grid lower">
+
+<div class="card">
+
+  <div class="cardHeader">
+    <div class="cardTitle">Recovery Timeline</div>
+    <div class="cardTag">Latest events</div>
+  </div>
+
+  <div class="timeline" id="timeline">
+
+    <div class="event">
+      <div class="eventTime">09:42:01</div>
+      <div class="eventBody">
+        <strong>Fleet monitoring initialized</strong>
+        <span>All robots operating within normal health envelope.</span>
+      </div>
+    </div>
+
+    <div class="event">
+      <div class="eventTime">09:42:04</div>
+      <div class="eventBody">
+        <strong>Predictive model updated</strong>
+        <span>R-06 elevated to 18% failure probability.</span>
+      </div>
+    </div>
+
+    <div class="event">
+      <div class="eventTime">09:42:09</div>
+      <div class="eventBody">
+        <strong>Mission scheduler optimized</strong>
+        <span>Battery-aware workload distribution completed.</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="cardHeader">
+    <div class="cardTitle">Mission Queue</div>
+    <div class="cardTag">Priority aware</div>
+  </div>
+
+  <div class="tasks" id="tasks"></div>
+
+</div>
+
+</section>
+
+
+<!-- SIMULATION CONTROLS -->
+
+<section class="grid controls">
+
+<div class="card">
+
+  <div class="cardHeader">
+    <div class="cardTitle">Failure Injection Lab</div>
+    <div class="cardTag">Test arbitrary sequences</div>
+  </div>
+
+  <div class="failureButtons">
+    <button class="failBtn" onclick="failRobot(0)">⚠ Fail R-01</button>
+    <button class="failBtn" onclick="failRobot(1)">⚠ Fail R-02</button>
+    <button class="failBtn" onclick="failRobot(2)">⚠ Fail R-03</button>
+    <button class="failBtn" onclick="failRobot(3)">⚠ Fail R-04</button>
+    <button class="failBtn" onclick="failRobot(4)">⚠ Fail R-05</button>
+    <button class="failBtn" onclick="failRobot(5)">⚠ Fail R-06</button>
+    <button class="failBtn" onclick="failRobot(6)">⚠ Fail R-07</button>
+    <button class="failBtn" onclick="failRobot(7)">⚠ Fail R-08</button>
+  </div>
+
+  <div style="margin-top:13px">
+    <button class="recoveryBtn" onclick="resetSimulation()">
+      ↻ Reset Simulation
+    </button>
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="cardHeader">
+    <div class="cardTitle">Recovery Engine</div>
+    <div class="cardTag">AI decision layer</div>
+  </div>
+
+  <div style="font-size:11px;color:var(--muted);line-height:1.7">
+    <div>✓ Mission criticality analysis</div>
+    <div>✓ Dependency-aware failure propagation</div>
+    <div>✓ Battery & capacity constraints</div>
+    <div>✓ Minimum-task-migration strategy</div>
+    <div>✓ Dynamic fleet rebalancing</div>
+  </div>
+
+</div>
+
+</section>
+
+</main>
+</div>
+
+
+<script>
+
+const robotData = [
+  {id:"R-01",health:96,battery:87,load:64,status:"ACTIVE"},
+  {id:"R-02",health:92,battery:74,load:71,status:"ACTIVE"},
+  {id:"R-03",health:89,battery:81,load:52,status:"ACTIVE"},
+  {id:"R-04",health:97,battery:91,load:42,status:"ACTIVE"},
+  {id:"R-05",health:84,battery:68,load:76,status:"ACTIVE"},
+  {id:"R-06",health:81,battery:57,load:83,status:"ACTIVE"},
+  {id:"R-07",health:94,battery:79,load:61,status:"ACTIVE"},
+  {id:"R-08",health:91,battery:88,load:49,status:"ACTIVE"}
+];
+
+let failed = new Set();
+let migrated = 0;
+
+function renderRobots(){
+
+  const container=document.getElementById("robots");
+
+  container.innerHTML=robotData.map((r,i)=>{
+
+    const isFailed=failed.has(i);
+
+    let statusClass="";
+    if(isFailed) statusClass="bad";
+    else if(r.health<87) statusClass="warn";
+
+    const status=isFailed?"FAILED":r.health<87?"RISK":"ACTIVE";
+
+    return `
+      <div class="robot ${isFailed?"failed":""}">
+        <div class="robotTop">
+          <div class="robotName">${r.id}</div>
+          <div class="status ${statusClass}">${status}</div>
+        </div>
+
+        <div class="robotIcon">🤖</div>
+
+        <div class="barLabel">
+          <span>Health</span>
+          <span>${isFailed?0:r.health}%</span>
+        </div>
+
+        <div class="bar">
+          <div class="fill"
+               style="width:${isFailed?0:r.health}%"></div>
+        </div>
+
+        <div class="barLabel">
+          <span>Battery</span>
+          <span>${isFailed?0:r.battery}%</span>
+        </div>
+
+        <div class="bar">
+          <div class="fill"
+               style="width:${isFailed?0:r.battery}%"></div>
+        </div>
+
+        <div class="barLabel">
+          <span>Mission Load</span>
+          <span>${isFailed?0:r.load}%</span>
+        </div>
+
+        <div class="bar">
+          <div class="fill"
+               style="width:${isFailed?0:r.load}%"></div>
+        </div>
+      </div>
+    `;
+
+  }).join("");
+}
+
+
+const taskData=[
+  ["Warehouse Pick Route","R-01","CRITICAL",82],
+  ["Cold Storage Delivery","R-02","HIGH",67],
+  ["Inventory Scan","R-03","MEDIUM",54],
+  ["Packing Line Support","R-05","HIGH",73],
+  ["Dock Transfer","R-07","CRITICAL",39],
+  ["Quality Inspection","R-08","MEDIUM",61]
+];
+
+function renderTasks(){
+
+  const container=document.getElementById("tasks");
+
+  container.innerHTML=taskData.map((t,i)=>{
+
+    let assigned=t[1];
+    let status="RUNNING";
+    let migrateClass="";
+
+    const index=robotData.findIndex(r=>r.id===assigned);
+
+    if(failed.has(index)){
+      status="MIGRATING";
+      migrateClass="migrate";
+
+      const available=robotData.findIndex((r,j)=>
+        !failed.has(j) && r.load<80
+      );
+
+      if(available>=0){
+        assigned=robotData[available].id;
+      }
+    }
+
+    return `
+      <div class="task">
+        <div>
+          <div class="taskName">${t[0]}</div>
+          <div class="taskMeta">
+            ${assigned} • ${t[2]} priority
+          </div>
+          <div class="progress">
+            <div style="width:${t[3]}%"></div>
+          </div>
+        </div>
+        <div class="taskStatus ${migrateClass}">
+          ${status}
+        </div>
+      </div>
+    `;
+
+  }).join("");
+}
+
+
+function addEvent(title,text){
+
+  const timeline=document.getElementById("timeline");
+
+  const time=new Date().toLocaleTimeString([],{
+    hour:"2-digit",
+    minute:"2-digit",
+    second:"2-digit"
+  });
+
+  timeline.insertAdjacentHTML("afterbegin",`
+    <div class="event">
+      <div class="eventTime">${time}</div>
+      <div class="eventBody">
+        <strong>${title}</strong>
+        <span>${text}</span>
+      </div>
+    </div>
+  `);
+}
+
+
+function drawEdges(){
+
+  const graph=document.getElementById("graph");
+
+  const links=[
+    ["n1","n2"],
+    ["n1","n4"],
+    ["n3","n4"],
+    ["n4","n5"],
+    ["n4","n6"],
+    ["n2","n5"]
+  ];
+
+  links.forEach(([a,b])=>{
+
+    const A=document.getElementById(a);
+    const B=document.getElementById(b);
+
+    const ax=A.offsetLeft+A.offsetWidth/2;
+    const ay=A.offsetTop+A.offsetHeight/2;
+
+    const bx=B.offsetLeft+B.offsetWidth/2;
+    const by=B.offsetTop+B.offsetHeight/2;
+
+    const dx=bx-ax;
+    const dy=by-ay;
+
+    const length=Math.sqrt(dx*dx+dy*dy);
+    const angle=Math.atan2(dy,dx)*180/Math.PI;
+
+    const edge=document.createElement("div");
+
+    edge.className="edge";
+
+    edge.style.width=length+"px";
+    edge.style.left=ax+"px";
+    edge.style.top=ay+"px";
+    edge.style.transform=`rotate(${angle}deg)`;
+
+    graph.appendChild(edge);
+  });
+}
+
+
+function failRobot(index){
+
+  if(failed.has(index)) return;
+
+  failed.add(index);
+
+  const r=robotData[index];
+
+  migrated+=Math.floor(Math.random()*2)+1;
+
+  document.getElementById("alert").classList.add("show");
+
+  document.getElementById("alertText").innerText=
+    `${r.id} failed. Dependency engine identified affected missions and initiated workload migration.`;
+
+  addEvent(
+    `${r.id} FAILURE DETECTED`,
+    `Telemetry anomaly confirmed. Health dropped below operational threshold.`
+  );
+
+  setTimeout(()=>{
+
+    addEvent(
+      "Cascade analysis completed",
+      `Dependency graph identified ${2+migrated} affected resources/tasks.`
+    );
+
+  },600);
+
+  setTimeout(()=>{
+
+    addEvent(
+      "Recovery planner activated",
+      `Tasks are being reassigned using mission criticality and battery constraints.`
+    );
+
+  },1100);
+
+  setTimeout(()=>{
+
+    addEvent(
+      "Fleet rebalanced",
+      `Workload redistributed while minimizing unnecessary task migration.`
+    );
+
+  },1700);
+
+  updateDashboard();
+}
+
+
+function emergencyRecovery(){
+
+  if(failed.size===0){
+
+    failRobot(5);
+
+    setTimeout(()=>{
+      failRobot(1);
+    },1000);
+
+  }else{
+
+    addEvent(
+      "Emergency recovery executed",
+      "All available robots rebalanced against current fleet capacity."
+    );
+
+    setTimeout(()=>{
+      failed.clear();
+      migrated=0;
+      updateDashboard();
+
+      document.getElementById("alert").classList.remove("show");
+
+      addEvent(
+        "Fleet restored",
+        "Mission schedule returned to nominal operating conditions."
+      );
+
+    },1600);
+  }
+}
+
+
+function updateDashboard(){
+
+  renderRobots();
+  renderTasks();
+
+  const available=robotData.length-failed.size;
+
+  document.getElementById("availability").innerText=
+    Math.round(available/robotData.length*100)+"%";
+
+  document.getElementById("migrated").innerText=migrated;
+
+  const completion=
+    Math.max(
+      76,
+      98.7-failed.size*4.7+migrated*.25
+    );
+
+  document.getElementById("completion").innerText=
+    completion.toFixed(1)+"%";
+
+  document.getElementById("efficiency").innerText=
+    Math.max(
+      68,
+      94-failed.size*3
+    )+"%";
+
+  document.getElementById("predicted").innerText=
+    Math.max(0,1+failed.size);
+
+  updateGraph();
+}
+
+
+function updateGraph(){
+
+  const nodes=document.querySelectorAll(".node");
+
+  nodes.forEach(n=>{
+    n.classList.remove("fail","affected","ok");
+    n.classList.add("ok");
+  });
+
+  if(failed.size===0) return;
+
+  document.getElementById("n1").classList.add("affected");
+  document.getElementById("n3").classList.add("affected");
+  document.getElementById("n4").classList.add("affected");
+  document.getElementById("n5").classList.add("affected");
+
+  if(failed.has(0))
+    document.getElementById("n1").className="node fail";
+
+  if(failed.has(1))
+    document.getElementById("n3").className="node fail";
+
+  if(failed.has(2))
+    document.getElementById("n6").className="node fail";
+}
+
+
+function resetSimulation(){
+
+  failed.clear();
+  migrated=0;
+
+  document.getElementById("alert").classList.remove("show");
+
+  robotData.forEach((r,i)=>{
+    r.health=[96,92,89,97,84,81,94,91][i];
+  });
+
+  addEvent(
+    "Simulation reset",
+    "All robots returned to nominal state."
+  );
+
+  updateDashboard();
+}
+
+
+renderRobots();
+renderTasks();
+drawEdges();
+updateDashboard();
+
+
+/* LIVE TELEMETRY */
+
+setInterval(()=>{
+
+  if(failed.size===0){
+
+    robotData.forEach(r=>{
+
+      r.battery=Math.max(
+        35,
+        r.battery-(Math.random()>.75?1:0)
+      );
+
+      if(Math.random()>.9){
+        r.health=Math.max(
+          75,
+          r.health-Math.floor(Math.random()*2)
+        );
+      }
+
+    });
+
+    renderRobots();
+  }
+
+},2500);
+
+
+/* ================= INTERACTIVE NAVIGATION & EXTRA GRAPHS ================= */
+
+let failureHistory = [{label:"Start", value:0}];
+
+function showView(view, button){
+  document.querySelectorAll(".navItem").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+
+  const extra = document.getElementById("extraViews");
+  const commandSections = document.querySelectorAll("main > section, main > .header, main > #alert");
+  const views = document.querySelectorAll("#extraViews .view");
+
+  if(view === "command"){
+    extra.style.display = "none";
+    commandSections.forEach(el=>el.style.display="");
+    document.querySelector(".header").scrollIntoView({behavior:"smooth"});
+    return;
+  }
+
+  commandSections.forEach(el=>{
+    if(el.id !== "extraViews") el.style.display="none";
+  });
+  extra.style.display="block";
+  views.forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+view).classList.add("active");
+
+  if(view==="fleet") updateFleetView();
+  if(view==="failure"){ updateFailureChart(); drawFailureCopyEdges(); updateFailureCopyGraph(); }
+  if(view==="missions") renderMissionView();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function drawSimpleChart(canvasId, labels, datasets, options={}){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx=canvas.getContext("2d");
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  const W=Math.max(400,rect.width), H=Math.max(260,rect.height);
+  canvas.width=W*dpr; canvas.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle="#081625"; ctx.fillRect(0,0,W,H);
+
+  const pad={l:48,r:20,t:24,b:36};
+  const cw=W-pad.l-pad.r, ch=H-pad.t-pad.b;
+  const max=options.max || 100, min=options.min || 0;
+
+  ctx.strokeStyle="rgba(127,150,173,.15)";
+  ctx.lineWidth=1;
+  ctx.font="10px Arial";
+  ctx.fillStyle="#7f96ad";
+  for(let i=0;i<=5;i++){
+    const y=pad.t+ch*i/5;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    const value=Math.round(max-(max-min)*i/5);
+    ctx.fillText(value,8,y+3);
+  }
+
+  labels.forEach((lab,i)=>{
+    const x=pad.l+(labels.length===1?cw/2:cw*i/(labels.length-1));
+    ctx.fillText(lab,x-12,H-12);
+  });
+
+  datasets.forEach((ds,di)=>{
+    ctx.beginPath();
+    ds.values.forEach((v,i)=>{
+      const x=pad.l+(labels.length===1?cw/2:cw*i/(labels.length-1));
+      const y=pad.t+ch-(v-min)/(max-min)*ch;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle=ds.color;
+    ctx.lineWidth=2.5;
+    ctx.stroke();
+
+    ds.values.forEach((v,i)=>{
+      const x=pad.l+(labels.length===1?cw/2:cw*i/(labels.length-1));
+      const y=pad.t+ch-(v-min)/(max-min)*ch;
+      ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);
+      ctx.fillStyle=ds.color;ctx.fill();
+    });
+
+    ctx.fillStyle=ds.color;
+    ctx.fillText(ds.name, W-pad.r-75, 18+di*15);
+  });
+}
+
+function updateFleetView(){
+  const labels=robotData.map(r=>r.id);
+  drawSimpleChart("fleetChart",labels,[
+    {name:"Health",values:robotData.map((r,i)=>failed.has(i)?0:r.health),color:"#35d7ff"},
+    {name:"Battery",values:robotData.map((r,i)=>failed.has(i)?0:r.battery),color:"#36e29a"},
+    {name:"Load",values:robotData.map((r,i)=>failed.has(i)?0:r.load),color:"#9d7cff"}
+  ]);
+
+  const active=robotData.filter((r,i)=>!failed.has(i));
+  const avg=(key)=>active.length?Math.round(active.reduce((s,r)=>s+r[key],0)/active.length):0;
+  document.getElementById("avgHealth").innerText=avg("health")+"%";
+  document.getElementById("avgBattery").innerText=avg("battery")+"%";
+  document.getElementById("avgLoad").innerText=avg("load")+"%";
+
+  document.getElementById("fleetTable").innerHTML=robotData.map((r,i)=>{
+    const f=failed.has(i);
+    return `<tr>
+      <td>${r.id}</td>
+      <td>${f?0:r.health}%</td>
+      <td>${f?0:r.battery}%</td>
+      <td>${f?0:r.load}%</td>
+      <td class="${f?'badText':r.health<87?'warnText':'goodText'}">${f?'FAILED':r.health<87?'RISK':'ACTIVE'}</td>
+    </tr>`;
+  }).join("");
+}
+
+function updateFailureChart(){
+  const labels=failureHistory.map(x=>x.label);
+  const values=failureHistory.map(x=>x.value);
+  drawSimpleChart("failureChart",labels,[{
+    name:"Failed robots",values,color:"#ff5470"
+  }],{max:Math.max(8,...values,2)});
+}
+
+function updateFailureCopyGraph(){
+  const ids=["fn1","fn2","fn3","fn4","fn5","fn6"];
+  ids.forEach(id=>{
+    const n=document.getElementById(id);
+    if(n)n.className="node ok";
+  });
+  if(failed.size){
+    ["fn1","fn3","fn4","fn5"].forEach(id=>document.getElementById(id)?.classList.add("affected"));
+  }
+  if(failed.has(0))document.getElementById("fn1").className="node fail";
+  if(failed.has(1))document.getElementById("fn3").className="node fail";
+  if(failed.has(2))document.getElementById("fn6").className="node fail";
+}
+
+function drawFailureCopyEdges(){
+  const graph=document.getElementById("failureGraphCopy");
+  if(!graph || graph.dataset.edges==="1") return;
+  const links=[["fn1","fn2"],["fn1","fn4"],["fn3","fn4"],["fn4","fn5"],["fn4","fn6"],["fn2","fn5"]];
+  links.forEach(([a,b])=>{
+    const A=document.getElementById(a),B=document.getElementById(b);
+    if(!A||!B)return;
+    const ax=A.offsetLeft+A.offsetWidth/2, ay=A.offsetTop+A.offsetHeight/2;
+    const bx=B.offsetLeft+B.offsetWidth/2, by=B.offsetTop+B.offsetHeight/2;
+    const dx=bx-ax,dy=by-ay,len=Math.sqrt(dx*dx+dy*dy),ang=Math.atan2(dy,dx)*180/Math.PI;
+    const edge=document.createElement("div");
+    edge.className="edge";
+    edge.style.width=len+"px";edge.style.left=ax+"px";edge.style.top=ay+"px";
+    edge.style.transform=`rotate(${ang}deg)`;
+    graph.appendChild(edge);
+  });
+  graph.dataset.edges="1";
+}
+
+function renderMissionView(){
+  document.getElementById("missionViewTasks").innerHTML=
+    taskData.map((t)=>{
+      const idx=robotData.findIndex(r=>r.id===t[1]);
+      const isFailed=failed.has(idx);
+      let assigned=t[1],status="RUNNING";
+      if(isFailed){
+        status="MIGRATING";
+        const available=robotData.findIndex((r,j)=>!failed.has(j)&&r.load<80);
+        if(available>=0) assigned=robotData[available].id;
+      }
+      return `<div class="task">
+        <div>
+          <div class="taskName">${t[0]}</div>
+          <div class="taskMeta">${assigned} • ${t[2]} priority</div>
+          <div class="progress"><div style="width:${t[3]}%"></div></div>
+        </div>
+        <div class="taskStatus ${isFailed?'migrate':''}">${status}</div>
+      </div>`;
+    }).join("");
+}
+
+function addRecoveryLog(title,text){
+  const log=document.getElementById("recoveryLog");
+  if(!log)return;
+  log.insertAdjacentHTML("afterbegin",`<div class="event">
+    <div class="eventTime">${new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"})}</div>
+    <div class="eventBody"><strong>${title}</strong><span>${text}</span></div>
+  </div>`);
+}
+
+function batteryRecovery(){
+  addRecoveryLog("Battery-aware optimization","Tasks prioritized toward robots with higher remaining battery.");
+  addEvent("Battery-aware optimization","Recovery engine selected robots using battery and capacity.");
+  renderMissionView();
+}
+
+function minimalMigration(){
+  addRecoveryLog("Minimal migration strategy","Planner is minimizing unnecessary task transfers.");
+  addEvent("Minimal migration strategy","Recovery engine is minimizing task migration.");
+  renderMissionView();
+}
+
+/* Hook extra views into existing state changes */
+const _oldFailRobot = failRobot;
+failRobot = function(index){
+  _oldFailRobot(index);
+  failureHistory.push({label:"F"+failed.size,value:failed.size});
+  if(failureHistory.length>10) failureHistory.shift();
+  updateFleetView();
+  updateFailureChart();
+  updateFailureCopyGraph();
+  renderMissionView();
+  document.getElementById("simFailures").innerText=failed.size;
+  document.getElementById("simMigrated").innerText=migrated;
+  document.getElementById("simAvailability").innerText=Math.round((robotData.length-failed.size)/robotData.length*100)+"%";
+};
+
+const _oldReset = resetSimulation;
+resetSimulation = function(){
+  _oldReset();
+  failureHistory.push({label:"Reset",value:0});
+  if(failureHistory.length>10) failureHistory.shift();
+  updateFleetView();
+  updateFailureChart();
+  updateFailureCopyGraph();
+  renderMissionView();
+  document.getElementById("simFailures").innerText="0";
+  document.getElementById("simMigrated").innerText="0";
+  document.getElementById("simAvailability").innerText="100%";
+};
+
+const _oldEmergency = emergencyRecovery;
+emergencyRecovery = function(){
+  _oldEmergency();
+  setTimeout(()=>{
+    failureHistory.push({label:"Emergency",value:failed.size});
+    if(failureHistory.length>10) failureHistory.shift();
+    updateFleetView();updateFailureChart();updateFailureCopyGraph();renderMissionView();
+  },120);
+};
+
+/* Keep extra views updated during live telemetry */
+setInterval(()=>{
+  if(document.getElementById("view-fleet")?.classList.contains("active")){
+    updateFleetView();
+  }
+},2500);
+
+/* Start with only the command center visible */
+document.getElementById("extraViews").style.display="none";
+
+</script>
+
+</body>
+</html>

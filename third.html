@@ -1,0 +1,261 @@
+/* ---------- Fleet topology ----------
+   Three operational zones (A, B) plus a relay hub (C) that
+   coordinates tasks between them — a deliberately fragile shape,
+   since hub units have the most dependents and cause the
+   widest cascades if they go down. */
+
+const NODES = {
+  1:  { x: 110, y: 120, label: 'R1' },
+  2:  { x: 230, y: 70,  label: 'R2' },
+  3:  { x: 235, y: 200, label: 'R3' },
+  4:  { x: 120, y: 270, label: 'R4' },
+  5:  { x: 690, y: 120, label: 'R5' },
+  6:  { x: 800, y: 70,  label: 'R6' },
+  7:  { x: 800, y: 200, label: 'R7' },
+  8:  { x: 690, y: 270, label: 'R8' },
+  9:  { x: 330, y: 410, label: 'R9' },
+  10: { x: 450, y: 470, label: 'R10' },
+  11: { x: 580, y: 410, label: 'R11' },
+  12: { x: 455, y: 330, label: 'R12' },
+};
+
+const EDGES = [
+  [1,2],[1,3],[2,3],[3,4],
+  [5,6],[5,7],[6,7],[7,8],
+  [9,10],[10,11],[11,12],[12,9],
+  [4,9],[8,11],[3,12],[7,12],
+];
+
+const TOTAL = Object.keys(NODES).length;
+
+/* ---------- State ---------- */
+
+let state = {};        // id -> 'healthy' | 'degraded' | 'failed' | 'recovering'
+let failOrder = [];     // ids in the order they failed, for recovery sequencing
+let maxCascadeDepth = 0;
+let timers = [];        // pending setTimeout ids, cleared on reset/recover
+let missionSeconds = 0;
+let clockHandle = null;
+let recovering = false;
+
+const adjacency = {};
+EDGES.forEach(([a, b]) => {
+  (adjacency[a] ??= []).push(b);
+  (adjacency[b] ??= []).push(a);
+});
+
+/* ---------- DOM refs ---------- */
+
+const svg = document.getElementById('fleetSvg');
+const logEl = document.getElementById('log');
+const statUptime = document.getElementById('statUptime');
+const statHealthy = document.getElementById('statHealthy');
+const statCascade = document.getElementById('statCascade');
+const statTime = document.getElementById('statTime');
+const cascadeProbInput = document.getElementById('cascadeProb');
+const cascadeProbVal = document.getElementById('cascadeProbVal');
+const cascadeDelayInput = document.getElementById('cascadeDelay');
+const cascadeDelayVal = document.getElementById('cascadeDelayVal');
+const btnRandomFail = document.getElementById('btnRandomFail');
+const btnRecover = document.getElementById('btnRecover');
+const btnReset = document.getElementById('btnReset');
+
+/* ---------- Init ---------- */
+
+function resetState() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  state = {};
+  Object.keys(NODES).forEach((id) => { state[id] = 'healthy'; });
+  failOrder = [];
+  maxCascadeDepth = 0;
+  missionSeconds = 0;
+  logEl.innerHTML = '';
+  recovering = false;
+  btnRecover.disabled = false;
+  log('info', 'Fleet nominal. All 12 units online.');
+  render();
+  updateStats();
+}
+
+function startClock() {
+  if (clockHandle) clearInterval(clockHandle);
+  clockHandle = setInterval(() => {
+    missionSeconds += 1;
+    const m = String(Math.floor(missionSeconds / 60)).padStart(2, '0');
+    const s = String(missionSeconds % 60).padStart(2, '0');
+    statTime.textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+/* ---------- Rendering ---------- */
+
+function render() {
+  const edgeSvg = EDGES.map(([a, b]) => {
+    const n1 = NODES[a], n2 = NODES[b];
+    const dead = state[a] === 'failed' || state[b] === 'failed';
+    return `<line x1="${n1.x}" y1="${n1.y}" x2="${n2.x}" y2="${n2.y}"
+      stroke="${dead ? 'rgba(228,87,46,0.35)' : 'rgba(136,150,174,0.35)'}"
+      stroke-width="${dead ? 1.5 : 1.5}" />`;
+  }).join('');
+
+  const nodeSvg = Object.entries(NODES).map(([id, n]) => {
+    const s = state[id];
+    const color = {
+      healthy: 'var(--healthy)',
+      degraded: 'var(--degraded)',
+      failed: 'var(--failed)',
+      recovering: 'var(--recovering)',
+    }[s];
+    const pulse = s === 'failed' || s === 'recovering'
+      ? `<circle cx="${n.x}" cy="${n.y}" r="22" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.5"><animate attributeName="r" values="16;26;16" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.55;0;0.55" dur="1.6s" repeatCount="indefinite"/></circle>`
+      : '';
+    return `
+      <g class="node" data-id="${id}" style="cursor:pointer">
+        ${pulse}
+        <circle cx="${n.x}" cy="${n.y}" r="16" fill="${color}" opacity="0.92" />
+        <text x="${n.x}" y="${n.y + 4}" text-anchor="middle"
+          font-family="IBM Plex Mono, monospace" font-size="10.5"
+          font-weight="600" fill="#08131E">${n.label}</text>
+      </g>`;
+  }).join('');
+
+  svg.innerHTML = edgeSvg + nodeSvg;
+
+  svg.querySelectorAll('.node').forEach((g) => {
+    g.addEventListener('click', () => onNodeClick(g.dataset.id));
+  });
+}
+
+function updateStats() {
+  const healthy = Object.values(state).filter((s) => s === 'healthy').length;
+  const uptime = Math.round((healthy / TOTAL) * 100);
+  statUptime.textContent = `${uptime}%`;
+  statHealthy.textContent = `${healthy} / ${TOTAL}`;
+  statCascade.textContent = String(maxCascadeDepth);
+}
+
+function log(type, message) {
+  const m = String(Math.floor(missionSeconds / 60)).padStart(2, '0');
+  const s = String(missionSeconds % 60).padStart(2, '0');
+  const line = document.createElement('div');
+  line.className = `log-line ${type}`;
+  line.textContent = `[${m}:${s}] ${message}`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+/* ---------- Failure + cascade ---------- */
+
+function onNodeClick(id) {
+  if (recovering) return;
+  if (state[id] === 'healthy' || state[id] === 'degraded') {
+    failRobot(id, 0, 'manual trigger');
+  }
+}
+
+function failRobot(id, depth, cause) {
+  if (state[id] === 'failed') return;
+  state[id] = 'failed';
+  failOrder.push(id);
+  maxCascadeDepth = Math.max(maxCascadeDepth, depth);
+  log('bad', `FAULT  — ${NODES[id].label} hard failure (${cause})`);
+  render();
+  updateStats();
+  scheduleCascade(id, depth);
+}
+
+function scheduleCascade(id, depth) {
+  const delay = Number(cascadeDelayInput.value);
+  const prob = Number(cascadeProbInput.value) / 100;
+  const neighbors = adjacency[id] || [];
+
+  neighbors.forEach((n) => {
+    if (state[n] !== 'healthy') return;
+    const t = setTimeout(() => {
+      if (state[n] !== 'healthy') return;
+      if (Math.random() < prob) {
+        state[n] = 'degraded';
+        log('warn', `DEGRADE — ${NODES[n].label} losing sync with ${NODES[id].label}, load rerouting`);
+        render();
+        const t2 = setTimeout(() => {
+          if (state[n] === 'degraded') {
+            failRobot(n, depth + 1, `cascade from ${NODES[id].label}`);
+          }
+        }, delay * 0.7);
+        timers.push(t2);
+      } else {
+        log('info', `HOLD    — ${NODES[n].label} absorbed load spike from ${NODES[id].label}`);
+      }
+    }, delay);
+    timers.push(t);
+  });
+}
+
+/* ---------- Recovery ---------- */
+
+function runRecovery() {
+  if (recovering) return;
+  const queue = failOrder.filter((id) => state[id] === 'failed' || state[id] === 'degraded');
+  if (queue.length === 0) {
+    log('info', 'No units currently down — nothing to recover.');
+    return;
+  }
+  recovering = true;
+  btnRecover.disabled = true;
+  log('info', `Recovery routine dispatched — ${queue.length} unit(s) queued, oldest failure first.`);
+
+  let i = 0;
+  function step() {
+    if (i >= queue.length) {
+      recovering = false;
+      btnRecover.disabled = false;
+      failOrder = [];
+      log('ok', 'Recovery routine complete. Fleet stabilized.');
+      updateStats();
+      return;
+    }
+    const id = queue[i];
+    state[id] = 'recovering';
+    log('warn', `RESTART — ${NODES[id].label} isolated, tasks reassigned to nearest healthy unit`);
+    render();
+    const t = setTimeout(() => {
+      state[id] = 'healthy';
+      log('ok', `ONLINE  — ${NODES[id].label} rejoined the fleet`);
+      render();
+      updateStats();
+      i += 1;
+      step();
+    }, 700);
+    timers.push(t);
+  }
+  step();
+}
+
+/* ---------- Controls ---------- */
+
+cascadeProbInput.addEventListener('input', () => {
+  cascadeProbVal.textContent = `${cascadeProbInput.value}%`;
+});
+cascadeDelayInput.addEventListener('input', () => {
+  cascadeDelayVal.textContent = `${cascadeDelayInput.value}ms`;
+});
+
+btnRandomFail.addEventListener('click', () => {
+  if (recovering) return;
+  const healthyIds = Object.keys(NODES).filter((id) => state[id] === 'healthy');
+  if (healthyIds.length === 0) {
+    log('info', 'Every unit is already down.');
+    return;
+  }
+  const pick = healthyIds[Math.floor(Math.random() * healthyIds.length)];
+  failRobot(pick, 0, 'random field fault');
+});
+
+btnRecover.addEventListener('click', runRecovery);
+btnReset.addEventListener('click', () => { resetState(); startClock(); });
+
+/* ---------- Boot ---------- */
+
+resetState();
+startClock();

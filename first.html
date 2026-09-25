@@ -1,0 +1,258 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Robot Fleet Recovery</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <h2>🤖 RoboRecover</h2>
+
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#fleet">Fleet</a>
+            <a href="#recovery">Recovery</a>
+        </div>
+    </nav>
+
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <div class="hero-text">
+
+            <p class="tag">AUTONOMOUS ROBOTICS SYSTEM</p>
+
+            <h1>
+                Robot Fleet Recovery
+                <span>Under Cascading Failures</span>
+            </h1>
+
+            <p>
+                A simulated intelligent recovery system that detects
+                robot failures, identifies cascading effects and
+                automatically restores fleet operations.
+            </p>
+
+            <button onclick="startRecovery()">
+                Start Recovery Simulation
+            </button>
+
+        </div>
+
+        <div class="hero-image">
+
+            <img
+                src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=900&q=80"
+                alt="Robot">
+
+        </div>
+
+    </section>
+
+
+    <!-- About -->
+    <section id="about">
+
+        <h2>What is a Cascading Failure?</h2>
+
+        <p class="section-text">
+            A cascading failure occurs when one robot fails and
+            its failure affects other robots or connected systems.
+            This can gradually reduce the performance of the entire
+            robot fleet.
+        </p>
+
+        <div class="failure-flow">
+
+            <div class="flow-box">
+                🤖
+                <h3>Robot Failure</h3>
+                <p>One robot stops functioning.</p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="flow-box">
+                ⚠️
+                <h3>Task Disruption</h3>
+                <p>Its assigned tasks remain incomplete.</p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="flow-box">
+                🔥
+                <h3>Cascading Effect</h3>
+                <p>Other robots become overloaded.</p>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="flow-box">
+                🛠️
+                <h3>Recovery</h3>
+                <p>Tasks are redistributed.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Fleet Status -->
+    <section id="fleet">
+
+        <h2>Fleet Monitoring</h2>
+
+        <p class="section-text">
+            Current simulated status of the autonomous robot fleet.
+        </p>
+
+        <div class="robot-container">
+
+            <div class="robot-card operational">
+
+                <img
+                    src="https://images.unsplash.com/photo-1487887235947-a955ef187fcc?auto=format&fit=crop&w=500&q=80"
+                    alt="Robot">
+
+                <h3>Robot R-01</h3>
+
+                <p>Status: <b>Operational</b></p>
+
+                <div class="status-bar">
+                    <div style="width: 92%;"></div>
+                </div>
+
+                <small>Battery: 92%</small>
+
+            </div>
+
+
+            <div class="robot-card warning">
+
+                <img
+                    src="https://images.unsplash.com/photo-1535378917042-10a22c95931a?auto=format&fit=crop&w=500&q=80"
+                    alt="Robot">
+
+                <h3>Robot R-02</h3>
+
+                <p>Status: <b>Warning</b></p>
+
+                <div class="status-bar">
+                    <div style="width: 48%;"></div>
+                </div>
+
+                <small>Battery: 48%</small>
+
+            </div>
+
+
+            <div class="robot-card failed">
+
+                <img
+                    src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=500&q=80"
+                    alt="Robot">
+
+                <h3>Robot R-03</h3>
+
+                <p>Status: <b>Failure Detected</b></p>
+
+                <div class="status-bar">
+                    <div style="width: 12%;"></div>
+                </div>
+
+                <small>Battery: 12%</small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Recovery System -->
+    <section id="recovery">
+
+        <h2>Recovery System</h2>
+
+        <p class="section-text">
+            The recovery system detects failures and redistributes
+            tasks among available robots.
+        </p>
+
+
+        <div class="recovery-steps">
+
+            <div>
+                <span>01</span>
+                <h3>Detect</h3>
+                <p>Identify the failed robot.</p>
+            </div>
+
+            <div>
+                <span>02</span>
+                <h3>Analyze</h3>
+                <p>Determine the impact on the fleet.</p>
+            </div>
+
+            <div>
+                <span>03</span>
+                <h3>Redistribute</h3>
+                <p>Move tasks to available robots.</p>
+            </div>
+
+            <div>
+                <span>04</span>
+                <h3>Recover</h3>
+                <p>Restore normal fleet operation.</p>
+            </div>
+
+        </div>
+
+
+        <div id="simulation">
+
+            <h3>System Status</h3>
+
+            <p id="status">
+                System ready. No recovery operation running.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <h3>🤖 RoboRecover</h3>
+
+        <p>
+            Simulated Robot Fleet Recovery System
+        </p>
+
+        <p>
+            Hackathon Project • 2026
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
+```
