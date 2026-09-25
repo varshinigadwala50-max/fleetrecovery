@@ -1,0 +1,1845 @@
+web application/stitch/projects/2284475682146501410/screens/17511227879445743610
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FleetGuard — Robot Fleet Recovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07111f;
+  --panel: #0c1929;
+  --panel2: #101f32;
+  --border: #1c344d;
+  --text: #e8f1fb;
+  --muted: #7f96ad;
+  --cyan: #35d7ff;
+  --green: #36e29a;
+  --yellow: #ffc857;
+  --red: #ff5470;
+  --blue: #4e8cff;
+  --purple: #9d7cff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14.5px;
+  min-height: 100vh;
+}
+button, input, select, a { font: inherit; }
+button { cursor: pointer; border: none; background: none; color: inherit; }
+a { color: inherit; text-decoration: none; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* particle bg */
+#particles {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.layer { position: relative; z-index: 2; }
+.screen { display: none; min-height: 100vh; }
+.screen.on { display: block; }
+
+/* INTRO */
+.topnav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px; border-bottom: 1px solid transparent;
+  position: sticky; top: 0; z-index: 40;
+  background: rgba(7,17,31,.75); backdrop-filter: blur(12px);
+}
+.topnav.scrolled { border-color: var(--border); }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
+.brand i {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  display: grid; place-items: center; color: #06121e; font-weight: 900; font-size: 14px;
+}
+.brand span { color: var(--cyan); }
+.nav-l { display: flex; gap: 22px; align-items: center; }
+.nav-l a { color: var(--muted); font-size: 13.5px; font-weight: 500; }
+.nav-l a:hover { color: var(--text); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 9px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--panel2); color: var(--text);
+  transition: .15s;
+}
+.btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.btn.pri {
+  background: linear-gradient(135deg, rgba(53,215,255,.2), rgba(157,124,255,.15));
+  border-color: rgba(53,215,255,.4); color: var(--cyan);
+}
+.btn.pri:hover { background: rgba(53,215,255,.25); }
+.btn.danger { border-color: rgba(255,84,112,.4); color: var(--red); background: rgba(255,84,112,.1); }
+.btn.block { width: 100%; }
+.btn.sm { padding: 7px 12px; font-size: 12.5px; }
+
+.hero {
+  max-width: 1080px; margin: 0 auto; padding: 72px 32px 56px;
+  display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center;
+}
+.hero .ey { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); font-weight: 600; margin-bottom: 12px; }
+.hero h1 { font-size: clamp(32px, 4.5vw, 48px); font-weight: 700; line-height: 1.1; margin-bottom: 14px; }
+.hero h1 em { font-style: normal; color: var(--muted); }
+.hero p { color: var(--muted); font-size: 16px; max-width: 460px; margin-bottom: 24px; line-height: 1.55; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-img {
+  border-radius: 14px; border: 1px solid var(--border); overflow: hidden;
+  aspect-ratio: 1; background: var(--panel);
+  box-shadow: 0 0 40px rgba(53,215,255,.08);
+}
+.hero-img img { width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+
+.strip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  max-width: 1080px; margin: 0 auto;
+}
+.strip div { padding: 22px; text-align: center; border-right: 1px solid var(--border); }
+.strip div:last-child { border-right: 0; }
+.strip strong { display: block; font-size: 24px; color: var(--cyan); margin-bottom: 4px; }
+.strip span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+.section { max-width: 1080px; margin: 0 auto; padding: 56px 32px; }
+.section h2 { font-size: 26px; margin-bottom: 8px; }
+.section .lead { color: var(--muted); margin-bottom: 28px; max-width: 520px; }
+.g { display: grid; gap: 14px; }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.g5 { grid-template-columns: repeat(5, 1fr); }
+
+.card {
+  background: rgba(12,25,41,.9); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.card h3 { font-size: 14px; margin-bottom: 8px; }
+.card p { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+
+.team-card { text-align: left; }
+.av {
+  width: 44px; height: 44px; border-radius: 10px; margin-bottom: 12px;
+  background: linear-gradient(135deg, rgba(53,215,255,.2), rgba(157,124,255,.2));
+  border: 1px solid var(--border); display: grid; place-items: center;
+  font-weight: 700; color: var(--cyan); font-size: 13px;
+}
+.team-card .role { font-size: 12.5px; color: var(--muted); margin: 2px 0 8px; }
+.team-card a { color: var(--cyan); font-size: 13px; }
+.team-card a:hover { text-decoration: underline; }
+
+.contact-card h4 {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--muted); margin-bottom: 10px;
+}
+.contact-form { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.contact-form input, .contact-form textarea, .field input {
+  width: 100%; padding: 11px 12px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border); color: var(--text); outline: none;
+}
+.contact-form input:focus, .contact-form textarea:focus, .field input:focus { border-color: var(--cyan); }
+.contact-form textarea { min-height: 90px; resize: vertical; }
+.form-ok { display: none; color: var(--green); font-size: 13px; }
+.form-ok.on { display: block; }
+.foot {
+  max-width: 1080px; margin: 0 auto; padding: 20px 32px 36px;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--border);
+}
+
+/* LOGIN */
+.login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+.login-box {
+  width: 100%; max-width: 400px; padding: 32px 28px;
+  background: rgba(12,25,41,.95); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: 0 0 50px rgba(53,215,255,.06);
+}
+.login-box h1 { font-size: 22px; margin: 14px 0 6px; }
+.login-box .sub { color: var(--muted); font-size: 13.5px; margin-bottom: 22px; line-height: 1.5; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+.login-err {
+  display: none; padding: 10px; border-radius: 8px; margin-bottom: 12px;
+  background: rgba(255,84,112,.1); border: 1px solid rgba(255,84,112,.3); color: var(--red); font-size: 13px;
+}
+.login-err.on { display: block; }
+.login-back { display: block; text-align: center; margin-top: 16px; color: var(--muted); font-size: 13px; }
+.login-back:hover { color: var(--cyan); }
+
+/* APP */
+.app { display: grid; grid-template-columns: 230px 1fr; min-height: 100vh; }
+.side {
+  background: rgba(8,16,28,.95); border-right: 1px solid var(--border);
+  padding: 18px 12px; display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh;
+}
+.side .brand { padding: 4px 8px 22px; }
+.nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.nav button {
+  text-align: left; padding: 11px 12px; border-radius: 8px;
+  color: var(--muted); font-size: 13.5px; font-weight: 500;
+  display: flex; gap: 10px; align-items: center; transition: .15s;
+}
+.nav button:hover { background: rgba(53,215,255,.06); color: var(--text); }
+.nav button.on {
+  background: rgba(53,215,255,.12); color: var(--cyan);
+  border: 1px solid rgba(53,215,255,.25);
+}
+.side-foot {
+  padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--panel); font-size: 12.5px; color: var(--muted);
+}
+.side-foot b { color: var(--text); display: block; margin-bottom: 2px; }
+.dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+  box-shadow: 0 0 8px var(--green); display: inline-block; margin-right: 6px;
+}
+
+main { padding: 22px 24px 40px; min-width: 0; }
+.view { display: none; }
+.view.on { display: block; animation: fade .2s ease; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+.head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 18px; gap: 12px; flex-wrap: wrap;
+}
+.head h1 { font-size: 22px; font-weight: 700; }
+.head p { color: var(--muted); font-size: 13.5px; margin-top: 3px; }
+.head-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.live {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px;
+  border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1px solid rgba(54,226,154,.35); color: var(--green);
+  background: rgba(54,226,154,.1);
+}
+.live i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+.kpi label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 600; }
+.kpi .v { font-size: 26px; font-weight: 700; margin-top: 4px; color: var(--cyan); }
+.kpi .t { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+.robot-card {
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; cursor: pointer; transition: .15s;
+}
+.robot-card:hover { border-color: rgba(53,215,255,.35); transform: translateY(-2px); }
+.robot-card.sel { border-color: var(--cyan); box-shadow: 0 0 0 1px rgba(53,215,255,.3); }
+.robot-card.risk { border-color: rgba(255,200,87,.4); }
+.robot-card.failed { border-color: rgba(255,84,112,.45); }
+.robot-ph { height: 110px; background: #061018; position: relative; }
+.robot-ph img { width: 100%; height: 100%; object-fit: cover; opacity: .85; }
+.robot-ph .st {
+  position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: 6px; text-transform: uppercase;
+}
+.st-ok { background: rgba(54,226,154,.2); color: var(--green); }
+.st-risk { background: rgba(255,200,87,.2); color: var(--yellow); }
+.st-bad { background: rgba(255,84,112,.2); color: var(--red); }
+.robot-bd { padding: 12px; }
+.robot-bd .nm { font-weight: 700; font-size: 13.5px; }
+.robot-bd .mt { font-size: 11.5px; color: var(--muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+.bar-lab { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 7px; }
+.bar { height: 4px; background: #0a1520; border-radius: 3px; margin-top: 3px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 3px; }
+.bar i.lo { background: linear-gradient(90deg, var(--yellow), var(--red)); }
+
+/* twin layout like screenshot */
+.twin-layout {
+  display: grid; grid-template-columns: 1fr 300px; gap: 0;
+  border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+  background: #c8ccd0; min-height: 480px;
+}
+.scene-wrap { position: relative; min-height: 480px; background: #c8ccd0; }
+#c3d { width: 100%; height: 100%; display: block; cursor: grab; min-height: 480px; }
+.scene-hint {
+  position: absolute; bottom: 12px; left: 12px;
+  font-size: 11px; color: var(--muted); background: rgba(6,14,24,.85);
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px;
+}
+
+/* inspector panel - screenshot format */
+.inspector {
+  background: var(--panel); border-left: 1px solid var(--border);
+  padding: 14px; overflow-y: auto; max-height: 520px;
+}
+.insp-badge {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  padding: 4px 10px; border-radius: 6px; margin-bottom: 12px;
+}
+.insp-badge.ok { background: rgba(54,226,154,.15); color: var(--green); border: 1px solid rgba(54,226,154,.3); }
+.insp-badge.risk { background: rgba(255,200,87,.15); color: var(--yellow); border: 1px solid rgba(255,200,87,.3); }
+.insp-badge.bad { background: rgba(255,84,112,.15); color: var(--red); border: 1px solid rgba(255,84,112,.3); }
+.insp-status {
+  border: 1px solid rgba(255,84,112,.25); background: rgba(255,84,112,.06);
+  border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; font-size: 12.5px;
+}
+.insp-status.ok {
+  border-color: rgba(54,226,154,.25); background: rgba(54,226,154,.06);
+}
+.insp-status.risk {
+  border-color: rgba(255,200,87,.25); background: rgba(255,200,87,.06);
+}
+.insp-status strong { display: block; margin-bottom: 3px; font-size: 11px; letter-spacing: .04em; }
+.insp-status.ok strong { color: var(--green); }
+.insp-status.risk strong { color: var(--yellow); }
+.insp-status.bad strong { color: var(--red); }
+.insp-status span { color: var(--muted); }
+.metrics {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;
+}
+.metric {
+  background: var(--panel2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px;
+}
+.metric .l { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
+.metric .v { font-size: 18px; font-weight: 700; }
+.metric .mb { height: 3px; background: #0a1520; border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.metric .mb i { display: block; height: 100%; border-radius: 2px; }
+.metric .mb i.bat { background: var(--cyan); }
+.metric .mb i.thm { background: var(--yellow); }
+.metric .mb i.lod { background: var(--purple); }
+.metric .mb i.com { background: var(--green); }
+.hist-title { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 6px; }
+.hist {
+  display: flex; align-items: flex-end; gap: 2px; height: 36px; margin-bottom: 14px;
+}
+.hist span {
+  flex: 1; background: var(--blue); border-radius: 2px 2px 0 0; min-width: 3px; opacity: .85;
+}
+.info-row {
+  display: flex; justify-content: space-between; font-size: 12.5px;
+  padding: 7px 0; border-bottom: 1px solid rgba(28,52,77,.8);
+}
+.info-row .l { color: var(--muted); }
+.info-row .v { font-weight: 600; }
+.focus-btn {
+  margin-top: 14px; width: 100%; padding: 11px;
+  border-radius: 8px; font-weight: 600; font-size: 13px;
+  background: linear-gradient(135deg, rgba(53,215,255,.2), rgba(78,140,255,.15));
+  border: 1px solid rgba(53,215,255,.4); color: var(--cyan);
+}
+
+.bottom-row {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; margin-top: 14px;
+}
+.dep-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel2); margin-bottom: 6px; font-size: 13px;
+}
+.dep-row .src { font-weight: 600; color: var(--cyan); }
+
+.drawer {
+  display: none; margin-top: 14px; border: 1px solid var(--border);
+  border-radius: 12px; background: var(--panel); padding: 16px;
+}
+.drawer.on { display: block; }
+.assign-box { margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel2); }
+.assign-box h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 8px; }
+.job-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 5px; font-size: 12.5px;
+}
+.assign-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.assign-row select {
+  flex: 1; min-width: 140px; padding: 9px 10px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  text-align: left; padding: 10px; color: var(--muted); font-size: 11px;
+  text-transform: uppercase; border-bottom: 1px solid var(--border);
+}
+td { padding: 11px 10px; border-bottom: 1px solid rgba(28,52,77,.5); }
+tr:hover td { background: rgba(53,215,255,.04); cursor: pointer; }
+
+.alert {
+  display: none; padding: 11px 14px; border-radius: 10px; margin-bottom: 12px;
+  background: rgba(255,84,112,.1); border: 1px solid rgba(255,84,112,.3);
+  color: #ffb3bf; align-items: center; justify-content: space-between;
+}
+.alert.on { display: flex; }
+
+.toast-wrap { position: fixed; bottom: 18px; right: 18px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  padding: 11px 14px; border-radius: 10px; background: var(--panel);
+  border: 1px solid var(--border); font-size: 13px; max-width: 290px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+.toast strong { display: block; margin-bottom: 2px; color: var(--cyan); }
+
+@media (max-width: 1000px) {
+  .hero, .g2, .twin-layout, .bottom-row { grid-template-columns: 1fr; }
+  .g3, .g4, .g5, .strip { grid-template-columns: 1fr 1fr; }
+  .app { grid-template-columns: 1fr; }
+  .side { display: none; }
+  .nav-l a:not(.btn) { display: none; }
+}
+
+/* cinematic home */
+.hero-cinematic {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: none;
+  padding: 80px 40px 60px;
+  overflow: hidden;
+  grid-template-columns: none;
+}
+.hero-net {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(53,215,255,.06), transparent 55%),
+    radial-gradient(ellipse at 20% 80%, rgba(157,124,255,.05), transparent 40%);
+  pointer-events: none;
+}
+.hero-net canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+.hero-content {
+  position: relative; z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 28px;
+  align-items: center;
+  max-width: 1100px;
+  width: 100%;
+  transition: transform .15s ease-out;
+}
+.hero-center { text-align: center; }
+.hero-title {
+  font-size: clamp(48px, 8vw, 92px) !important;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.95 !important;
+  margin: 12px 0 16px !important;
+  text-shadow: 0 0 60px rgba(53,215,255,.15);
+}
+.hero-tag {
+  color: var(--muted);
+  font-size: 15px !important;
+  max-width: 360px;
+  margin: 0 auto 28px !important;
+}
+.hero-col .callout {
+  display: flex; gap: 12px; align-items: flex-start;
+  max-width: 240px;
+  opacity: 0.9;
+}
+.hero-col.right { display: flex; justify-content: flex-end; }
+.dot-o {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
+  margin-top: 6px; flex-shrink: 0;
+}
+.callout-k {
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--cyan); font-weight: 600; margin-bottom: 6px;
+}
+.callout p { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0; }
+.scroll-hint {
+  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+  z-index: 3; font-size: 11px; letter-spacing: .2em; color: var(--muted);
+}
+.scroll-hint::before {
+  content: ''; display: block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan); margin: 0 auto 8px; box-shadow: 0 0 8px var(--cyan);
+}
+
+/* meteors layer */
+#meteors {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+}
+.meteor {
+  position: absolute;
+  width: 2px;
+  height: 90px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(53,215,255,0.15) 20%, rgba(53,215,255,0.95) 70%, #ffffff 100%);
+  border-radius: 2px;
+  opacity: 0;
+  filter: drop-shadow(0 0 8px rgba(53,215,255,.9));
+  /* backslash shape: diagonal \\ */
+  transform: rotate(35deg);
+  transform-origin: center top;
+  animation: meteorFall linear forwards;
+  pointer-events: none;
+}
+@keyframes meteorFall {
+  0% {
+    opacity: 0;
+    left: -5vw;
+    top: var(--start-y, 0vh);
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% {
+    opacity: 0;
+    left: 105vw;
+    top: var(--end-y, 100vh);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; }
+  .hero-col { display: none !important; }
+}
+
+
+.modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 400;
+  background: rgba(4,10,18,.75); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-bg.on { display: flex; }
+.modal {
+  width: 100%; max-width: 400px; background: var(--panel);
+  border: 1px solid var(--border); border-radius: 14px; padding: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.5);
+}
+.modal h2 { font-size: 18px; margin-bottom: 6px; }
+.modal .sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+.modal .row { display: flex; gap: 8px; margin-top: 14px; }
+
+.status-risk { color: #ff5470 !important; font-weight: 700; }
+.status-ok { color: #36e29a; font-weight: 600; }
+.status-bad { color: #ff5470; font-weight: 700; }
+.speed-ctrl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.speed-ctrl input[type=range] { width: 100px; accent-color: var(--cyan); }
+.speed-ctrl .eta { font-size: 11.5px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+.eff-card { padding: 12px; }
+.eff-card .nm { font-size: 12.5px; font-weight: 600; margin-bottom: 8px; }
+.eff-bars { display: flex; align-items: flex-end; gap: 2px; height: 48px; }
+.eff-bars i { flex: 1; border-radius: 2px 2px 0 0; background: linear-gradient(to top, var(--cyan), var(--blue)); min-width: 3px; opacity: 0.85; }
+.eff-bars i.dim { background: linear-gradient(to top, var(--red), #ff8a9a); opacity: 0.7; }
+.fpa-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+.fpa-item:last-child { border-bottom: none; }
+.fpa-item b { color: var(--cyan); }
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<div id="meteors" style="display:none"></div>
+
+<!-- INTRO -->
+<div class="screen on layer" id="screenIntro">
+  <nav class="topnav" id="topnav">
+    <div class="brand"><i>F</i>Fleet<span>Guard</span></div>
+    <div class="nav-l">
+      <a href="#about">About</a>
+      <a href="#team">Team</a>
+      <a href="#contact">Contact</a>
+      <a href="#help">Help</a>
+      <button class="btn pri sm" onclick="goLogin()">Operator access</button>
+    </div>
+  </nav>
+  <section class="hero hero-cinematic" id="heroHome">
+    <div class="hero-net" id="heroNet" aria-hidden="true"></div>
+    <div class="hero-content" id="heroContent">
+      <div class="hero-col left">
+        <div class="callout">
+          <span class="dot-o"></span>
+          <div>
+            <div class="callout-k">WE BUILD</div>
+            <p>operations software for robot fleets under failure pressure — visibility, cascade control, and manual recovery.</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-center">
+        <div class="ey">Autonomous fleet operations</div>
+        <h1 class="hero-title">FLEET<br>GUARD</h1>
+        <p class="hero-tag">Recover the cell before the cascade spreads.</p>
+        <div class="hero-actions">
+          <button class="btn pri" onclick="goLogin()">Enter console</button>
+          <a class="btn" href="#about">Explore</a>
+        </div>
+      </div>
+      <div class="hero-col right">
+        <div class="callout">
+          <span class="dot-o"></span>
+          <div>
+            <div class="callout-k">WE RUN</div>
+            <p>live 3D twins, health envelopes, and operator-driven work reassignment across the floor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint">SCROLL</div>
+  </section>
+  <div class="strip">
+    <div><strong>24/7</strong><span>Coverage</span></div>
+    <div><strong>&lt;2s</strong><span>Failover</span></div>
+    <div><strong>8+</strong><span>Units / cell</span></div>
+    <div><strong>Live</strong><span>3D twin</span></div>
+  </div>
+  <section class="section" id="about">
+    <h2>About</h2>
+    <p class="lead">FleetGuard is an operations console for robot fleets under failure pressure.</p>
+    <div class="g g3">
+      <div class="card"><h3>Health watch</h3><p>Per-unit battery, thermal, load, and survival estimates.</p></div>
+      <div class="card"><h3>Cascade view</h3><p>See dependency edges and impact when a unit drops.</p></div>
+      <div class="card"><h3>Manual assign</h3><p>You choose which healthy robot inherits work.</p></div>
+    </div>
+  </section>
+  <section class="section" id="team">
+    <h2>Team</h2>
+    <p class="lead">Reach the people behind the console.</p>
+    <div class="g g3">
+      <div class="card team-card"><div class="av">VG</div><h3>Varshini Gadwala</h3><div class="role">Systems lead</div><a href="mailto:abc@gmail.com">abc@gmail.com</a></div>
+      <div class="card team-card"><div class="av">VT</div><h3>Vrithika Tada</h3><div class="role">Fleet operations</div><a href="mailto:def@gmail.com">def@gmail.com</a></div>
+      <div class="card team-card"><div class="av">NV</div><h3>Nithisha Vempalli</h3><div class="role">Recovery engineering</div><a href="mailto:ghi@gmail.com">ghi@gmail.com</a></div>
+    </div>
+  </section>
+  <section class="section" id="contact">
+    <h2>Contact</h2>
+    <p class="lead">Help desk and message form — fully usable.</p>
+    <div class="g g2">
+      <div class="card contact-card">
+        <h4>Help desk</h4>
+        <p><a href="tel:+18005550192" style="color:var(--cyan)">+1 (800) 555-0192</a></p>
+        <p style="margin-top:6px"><a href="mailto:help@fleetguard.ops" style="color:var(--cyan)">help@fleetguard.ops</a></p>
+        <p style="color:var(--muted);font-size:13px;margin-top:12px">24/7 UTC · cascade priority line</p>
+      </div>
+      <div class="card contact-card">
+        <h4>Message</h4>
+        <form class="contact-form" onsubmit="return sendContact(event)">
+          <input name="name" placeholder="Name" required>
+          <input name="email" type="email" placeholder="Email" required>
+          <textarea name="msg" placeholder="Message" required></textarea>
+          <button class="btn pri" type="submit">Send</button>
+          <div class="form-ok" id="formOk">Message recorded for the desk.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="help">
+    <h2>Help</h2>
+    <div class="g g2">
+      <div class="card"><h3>Sign-in</h3><p>Use your operator credentials. Contact the desk if your cell is not provisioned.</p></div>
+      <div class="card"><h3>Unit failure</h3><p>Open the unit panel, review metrics, then manually assign jobs to a healthy backup.</p></div>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>© 2026 FleetGuard</span>
+    <span><a href="mailto:help@fleetguard.ops">help@fleetguard.ops</a> · +1 (800) 555-0192</span>
+  </footer>
+</div>
+
+<!-- LOGIN -->
+<div class="screen layer" id="screenLogin">
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="brand"><i>F</i>Fleet<span>Guard</span></div>
+      <h1>Operator console</h1>
+      <p class="sub">Sign in to the FleetGuard recovery console — live health, 3D twin, and manual work reassignment.</p>
+      <div class="login-err" id="loginErr"></div>
+      <div class="field"><label>Username</label><input id="userIn" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input id="passIn" type="password" autocomplete="current-password"></div>
+      <button class="btn pri block" id="btnLogin" style="margin-top:6px">Sign in</button>
+      <a class="login-back" href="#" onclick="goIntro();return false">← Back to overview</a>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="screen layer" id="screenApp">
+  <div class="app">
+    <aside class="side">
+      <div class="brand"><i>F</i>Fleet<span>Guard</span></div>
+      <nav class="nav">
+        <button class="on" data-v="command">◉ Command Center</button>
+        <button data-v="fleet">▣ Fleet Health</button>
+        <button data-v="twin">◈ 3D Digital Twin</button>
+        <button data-v="plans">↻ Recovery Plans</button>
+        <button data-v="fpa">◎ Failure Propagation</button>
+        <button data-v="sim">⚡ Simulation Lab</button>
+      </nav>
+      <div class="side-foot">
+        <div><span class="dot"></span>Simulation Online</div>
+        <div style="margin-top:4px;font-size:11.5px" id="sideUser">Digital twin synchronized</div>
+        <button class="btn sm block" style="margin-top:10px" onclick="logout()">Sign out</button>
+      </div>
+    </aside>
+    <main>
+      <div id="view-command" class="view on">
+        <div class="head">
+          <div><h1>Command Center</h1><p>Click a robot for full analysis · assign work manually</p></div>
+          <div class="head-actions">
+            <span class="live"><i></i> LIVE</span>
+            <button class="btn pri" onclick="openAddRobot()">+ Add robot</button>
+            <button class="btn danger" onclick="emergency()">Emergency recovery</button>
+          </div>
+        </div>
+        <div class="alert" id="alert"><span><b>Cascade active</b></span><button class="btn sm" onclick="emergency()">Recover</button></div>
+        <div class="g g5" style="margin-bottom:14px">
+          <div class="card kpi"><label>Online</label><div class="v" id="kOn">8</div><div class="t" id="kOnT">of 8</div></div>
+          <div class="card kpi"><label>At risk</label><div class="v" id="kRisk">2</div><div class="t">watch</div></div>
+          <div class="card kpi"><label>Reassigned</label><div class="v" id="kMig">0</div><div class="t">jobs</div></div>
+          <div class="card kpi"><label>Survival</label><div class="v" id="kSurv">90%</div><div class="t">avg</div></div>
+          <div class="card kpi"><label>Completion</label><div class="v" id="kComp">98%</div><div class="t">missions</div></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px"><h3 style="font-size:14px">Fleet units</h3><span style="color:var(--muted);font-size:12px">photos · click for detail</span></div>
+          <div class="g g4" id="robotGrid"></div>
+          <div class="drawer" id="drawer"></div>
+        </div>
+      </div>
+
+      <div id="view-fleet" class="view">
+        <div class="head"><div><h1>Fleet Health</h1><p>Telemetry table</p></div></div>
+        <div class="card"><table><thead><tr><th>Unit</th><th>Status</th><th>Health</th><th>Battery</th><th>Task</th><th>Zone</th><th>Task speed</th></tr></thead><tbody id="fleetBody"></tbody></table></div>
+      </div>
+
+      <div id="view-twin" class="view">
+        <div class="head">
+          <div><h1>3D Digital Twin</h1><p>Select a unit on the grid for live metrics</p></div>
+          <div class="head-actions">
+            <button class="btn sm" onclick="resetCam()">Reset view</button>
+            <button class="btn pri sm" onclick="boostMove()">Animate</button>
+          </div>
+        </div>
+        <div class="twin-layout">
+          <div class="scene-wrap">
+            <canvas id="c3d"></canvas>
+            <div class="scene-hint">industrial cell · drag · scroll · click robot</div>
+          </div>
+          <div class="inspector" id="inspector">
+            <div id="inspBody"><p style="color:var(--muted);font-size:13px">Select a robot on the twin.</p></div>
+          </div>
+        </div>
+        <div class="bottom-row">
+          <div class="card">
+            <h3 style="font-size:13px;margin-bottom:10px">Dependency Edges</h3>
+            <div id="depList"></div>
+          </div>
+          <div class="card">
+            <h3 style="font-size:13px;margin-bottom:10px">Cascade Impact</h3>
+            <div id="cascadeBox" style="color:var(--muted);font-size:13.5px;line-height:1.6">No active failures. Graph is in nominal state.<br>All units healthy. Migration paths idle.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-plans" class="view">
+        <div class="head"><div><h1>Recovery Plans</h1><p>Read what each plan does before you activate it</p></div></div>
+        <div class="g g2" id="planGrid"></div>
+        <div class="card" style="margin-top:14px" id="suggestBox">
+          <h3 style="font-size:14px;margin-bottom:8px">Suggested plan</h3>
+          <p style="color:var(--muted);font-size:13.5px;margin-bottom:12px;line-height:1.55" id="suggestText">Based on current fleet state, pick a strategy below or use the interactive recommender.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px">
+            <label style="font-size:12.5px;color:var(--muted)">Priority focus</label>
+            <select id="suggestFocus" onchange="updateSuggest()" style="padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--border);color:var(--text)">
+              <option value="speed">Fastest recovery</option>
+              <option value="safe">Lowest disruption</option>
+              <option value="critical">Protect critical missions</option>
+              <option value="freeze">Stop cascade first</option>
+            </select>
+            <button class="btn pri sm" onclick="applySuggest()">Activate suggested</button>
+          </div>
+          <div id="suggestDetail" style="font-size:13px;color:var(--muted);line-height:1.6;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)"></div>
+        </div>
+      </div>
+
+      
+      <div id="view-fpa" class="view">
+        <div class="head">
+          <div>
+            <h1>Failure Propagation Analysis</h1>
+            <p>Causes · patterns · future impact — go to Recovery for actions</p>
+          </div>
+          <div class="head-actions">
+            <button class="btn pri" onclick="document.querySelector('.nav button[data-v=plans]').click()">Open Recovery Plans</button>
+          </div>
+        </div>
+        <div class="g g2" style="margin-bottom:14px">
+          <div class="card">
+            <h3 style="margin-bottom:10px;font-size:14px">What is failing — root causes</h3>
+            <div id="fpaCauses"></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px;font-size:14px">Pattern detection</h3>
+            <div id="fpaPattern" style="color:var(--muted);font-size:13.5px;line-height:1.65"></div>
+          </div>
+        </div>
+        <div class="g g2">
+          <div class="card">
+            <h3 style="margin-bottom:10px;font-size:14px">Future impact forecast</h3>
+            <div id="fpaFuture" style="color:var(--muted);font-size:13.5px;line-height:1.65"></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px;font-size:14px">Next step</h3>
+            <p style="color:var(--muted);font-size:13.5px;margin-bottom:14px;line-height:1.6">
+              For detailed recovery steps, task descriptions before you implement an action, and an interactive suggested plan, open the Recovery Plans page.
+            </p>
+            <button class="btn pri" onclick="document.querySelector('.nav button[data-v=plans]').click()">Go to Recovery Plans →</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-sim" class="view">
+        <div class="head"><div><h1>Simulation Lab</h1><p>Inject failures · work efficiency over time</p></div></div>
+        <div class="card" style="margin-bottom:14px">
+          <h3 style="margin-bottom:12px;font-size:14px">Work efficiency by unit (gradual)</h3>
+          <div id="effCharts" class="g g4"></div>
+        </div>
+        <div class="g g2">
+          <div class="card">
+            <h3 style="margin-bottom:10px;font-size:14px">Fail unit</h3>
+            <div id="simBtns" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn danger" onclick="emergency()">Emergency recovery</button>
+              <button class="btn" onclick="resetAll()">Reset</button>
+            </div>
+          </div>
+          <div class="card"><h3 style="margin-bottom:10px;font-size:14px">Log</h3><div id="log" style="max-height:260px;overflow:auto;font-size:12.5px"></div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal-bg" id="addModal">
+  <div class="modal">
+    <h2>Add robot to fleet</h2>
+    <p class="sub">Enter a name and the task to assign. Unit gets the next id and appears in Command + Fleet + 3D twin.</p>
+    <div class="field"><label>Robot name *</label><input id="newRobotName" placeholder="e.g. Bay Runner" maxlength="24"></div>
+    <div class="field"><label>Task to assign *</label><input id="newRobotTask" placeholder="e.g. Night corridor sweep" maxlength="40"></div>
+    <div class="field"><label>Zone</label><input id="newRobotZone" placeholder="e.g. E1" maxlength="6" value="E1"></div>
+    <div class="row">
+      <button class="btn" style="flex:1" onclick="closeAddRobot()">Cancel</button>
+      <button class="btn pri" style="flex:1" onclick="confirmAddRobot()">Add unit</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+const AUTH = { u: 'hackfusion', p: 'yoi time' };
+
+const robots = [
+  { id:'R-01', name:'Atlas Hauler', zone:'A1', health:96, battery:86, thermal:38, load:64, comms:88, task:'Warehouse Pick Route', capability:'pick · transport', role:'Warehouse picker',
+    img:'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=280&fit=crop',
+    causes:['Nominal'], survival:97, critical:['None'], replace:'R-04 hot spare', hist:[70,72,75,78,80,82,84,86,85,86,87,86,85,86,88,86,84,85,86,87,86,85,86,88,86,85,86,87,86,86] },
+  { id:'R-02', name:'Scout Runner', zone:'A2', health:92, battery:71, thermal:41, load:48, comms:91, task:'Corridor patrol north', capability:'scout · patrol', role:'Scout',
+    img:'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=280&fit=crop',
+    causes:['Mild congestion'], survival:93, critical:['Watch battery'], replace:'R-08', hist:[80,78,76,74,73,72,71,70,71,72,71,70,69,71,72,71,70,71,72,71,70,71,70,71,72,71,70,71,71,71] },
+  { id:'R-03', name:'Dock Lifter', zone:'B1', health:89, battery:64, thermal:47, load:55, comms:84, task:'Assist lift dock', capability:'lift · dock', role:'Lifter',
+    img:'https://images.unsplash.com/photo-1518314916381-77a37c2a49ae?w=400&h=280&fit=crop',
+    causes:['Actuator heat'], survival:88, critical:['Thermal check 30m'], replace:'R-07', hist:[75,74,72,70,68,66,65,64,63,64,65,64,63,64,65,64,63,64,64,63,64,65,64,63,64,64,63,64,64,64] },
+  { id:'R-04', name:'Corridor Guard', zone:'B2', health:97, battery:88, thermal:36, load:22, comms:95, task:'Corridor patrol', capability:'guard · patrol', role:'Guard',
+    img:'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=280&fit=crop',
+    causes:['Healthy'], survival:98, critical:['None'], replace:'Primary spare', hist:[90,89,88,88,87,88,89,88,87,88,89,88,87,88,88,89,88,87,88,89,88,87,88,88,87,88,89,88,88,88] },
+  { id:'R-05', name:'Shelf Picker', zone:'C1', health:84, battery:51, thermal:52, load:61, comms:79, task:'Pick list C1-heavy', capability:'pick · slot', role:'Picker',
+    img:'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=280&fit=crop',
+    causes:['Battery low','Gripper lag','Thermal tight'], survival:72, critical:['Charge swap','Reduce heavy picks'], replace:'R-01 · bay C', hist:[68,65,62,60,58,56,54,53,52,51,50,51,52,51,50,51,50,49,51,52,51,50,51,50,51,50,51,51,50,51] },
+  { id:'R-06', name:'Line Inspector', zone:'C2', health:81, battery:43, thermal:55, load:70, comms:72, task:'Lane-3 QC inspect', capability:'inspect · QC', role:'Inspector',
+    img:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=280&fit=crop',
+    causes:['High load','Battery critical','Sensor drift'], survival:61, critical:['Load shed','Recalibrate sensors'], replace:'Chassis 06-B', hist:[60,58,55,52,50,48,46,45,44,43,42,43,44,43,42,41,43,42,41,43,42,41,42,43,42,41,42,43,42,43] },
+  { id:'R-07', name:'Freight Mule', zone:'D1', health:94, battery:76, thermal:40, load:38, comms:90, task:'Dock transfer bay 3', capability:'haul · transfer', role:'Hauler',
+    img:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=280&fit=crop',
+    causes:['Nominal'], survival:95, critical:['None'], replace:'Dock backup', hist:[82,80,79,78,77,76,75,76,77,76,75,76,77,76,75,76,76,75,76,77,76,75,76,76,75,76,77,76,76,76] },
+  { id:'R-08', name:'Night Patrol', zone:'D2', health:91, battery:69, thermal:39, load:45, comms:87, task:'Night perimeter D', capability:'patrol · secure', role:'Patrol',
+    img:'https://images.unsplash.com/photo-1546776310-eef45dd75d8c?w=400&h=280&fit=crop',
+    causes:['Duty peak'], survival:91, critical:['None'], replace:'Overlap R-02', hist:[78,76,74,72,71,70,69,68,69,70,69,68,69,70,69,68,69,70,69,68,69,69,68,69,70,69,68,69,69,69] },
+];
+
+let jobs = [
+  { id:'J-101', title:'Shelf restock A-12', robot:'R-01', progress:72 },
+  { id:'J-102', title:'Corridor patrol north', robot:'R-04', progress:41 },
+  { id:'J-103', title:'Dock transfer bay 3', robot:'R-07', progress:88 },
+  { id:'J-104', title:'Inventory scan B', robot:'R-02', progress:15 },
+  { id:'J-105', title:'Pick list C1-heavy', robot:'R-05', progress:56 },
+  { id:'J-106', title:'Lane-3 QC inspect', robot:'R-06', progress:38 },
+  { id:'J-107', title:'SKU slotting C1', robot:'R-05', progress:22 },
+  { id:'J-108', title:'Sensor sweep C2', robot:'R-06', progress:64 },
+  { id:'J-109', title:'Night perimeter D', robot:'R-08', progress:45 },
+  { id:'J-110', title:'Assist lift dock', robot:'R-03', progress:30 },
+];
+
+const failed = new Set();
+let migrated = 0, selected = 0;
+robots.forEach(r => { if (r.taskSpeed == null) r.taskSpeed = 1; });
+
+function st(i) {
+  if (failed.has(i)) return 'failed';
+  if (robots[i].health < 87 || robots[i].battery < 55) return 'risk';
+  return 'ok';
+}
+function surv(i) {
+  if (failed.has(i)) return 0;
+  let s = robots[i].survival;
+  if (robots[i].battery < 50) s -= 8;
+  if (robots[i].health < 85) s -= 6;
+  return Math.max(4, Math.min(99, s));
+}
+function jobsOf(id) { return jobs.filter(j => j.robot === id); }
+
+function toast(t, m) {
+  const e = document.createElement('div');
+  e.className = 'toast';
+  e.innerHTML = '<strong>' + t + '</strong>' + m;
+  toasts.appendChild(e);
+  setTimeout(() => e.remove(), 3000);
+}
+function log(t, b) {
+  const tm = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('log').insertAdjacentHTML('afterbegin',
+    '<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)"><span class="mono" style="color:var(--cyan)">' + tm + '</span><br><b>' + t + '</b><br><span style="color:var(--muted)">' + b + '</span></div>');
+}
+
+function goIntro() {
+  screenIntro.classList.add('on'); screenLogin.classList.remove('on'); screenApp.classList.remove('on');
+}
+function goLogin() {
+  screenIntro.classList.remove('on'); screenLogin.classList.add('on'); screenApp.classList.remove('on');
+  setTimeout(() => userIn.focus(), 80);
+}
+function enterApp() {
+  screenIntro.classList.remove('on'); screenLogin.classList.remove('on'); screenApp.classList.add('on');
+  sideUser.textContent = 'Operator · session active';
+  toast('Signed in', 'Console ready');
+  updateAll();
+  if (typeof onResize3D === 'function') setTimeout(onResize3D, 100);
+}
+function logout() { goIntro(); toast('Signed out', 'Session closed'); }
+
+btnLogin.onclick = () => {
+  loginErr.classList.remove('on');
+  const u = userIn.value.trim(), p = passIn.value;
+  if (!u || !p) { loginErr.textContent = 'Enter username and password.'; loginErr.classList.add('on'); return; }
+  if (u !== AUTH.u || p !== AUTH.p) { loginErr.textContent = 'Invalid credentials.'; loginErr.classList.add('on'); return; }
+  enterApp();
+};
+passIn.addEventListener('keydown', e => { if (e.key === 'Enter') btnLogin.click(); });
+
+function sendContact(e) {
+  e.preventDefault();
+  formOk.classList.add('on');
+  toast('Sent', 'Help desk notified');
+  e.target.reset();
+  return false;
+}
+addEventListener('scroll', () => topnav.classList.toggle('scrolled', scrollY > 16), { passive: true });
+
+document.querySelectorAll('.nav button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.nav button').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('view-' + b.dataset.v).classList.add('on');
+    if (b.dataset.v === 'twin' && typeof onResize3D === 'function') setTimeout(onResize3D, 40);
+  };
+});
+
+function renderRobots() {
+  robotGrid.innerHTML = robots.map((r, i) => {
+    const s = st(i);
+    const cls = s === 'failed' ? 'st-bad' : s === 'risk' ? 'st-risk' : 'st-ok';
+    const lab = s === 'failed' ? 'offline' : s === 'risk' ? 'at risk' : 'healthy';
+    return `<div class="robot-card ${s} ${selected===i?'sel':''}" onclick="selectRobot(${i})">
+      <div class="robot-ph"><img src="${r.img}" alt="" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=280&fit=crop'"><span class="st ${cls}">${lab}</span></div>
+      <div class="robot-bd">
+        <div class="nm">${r.id} · ${r.name}</div>
+        <div class="mt">${r.zone} · ${surv(i)}% · ${jobsOf(r.id).length} jobs</div>
+        <div class="bar-lab"><span>Health</span><span>${r.health}%</span></div>
+        <div class="bar"><i class="${r.health<85?'lo':''}" style="width:${r.health}%"></i></div>
+        <div class="bar-lab"><span>Battery</span><span>${r.battery}%</span></div>
+        <div class="bar"><i class="${r.battery<50?'lo':''}" style="width:${r.battery}%"></i></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectRobot(i) {
+  selected = i;
+  renderRobots();
+  showDrawer(i);
+  showInspector(i);
+  if (typeof focusRobot3D === 'function') focusRobot3D(i);
+  if (typeof update3DColors === 'function') update3DColors();
+}
+
+function showInspector(i) {
+  const r = robots[i], s = st(i);
+  const badge = s === 'failed' ? 'bad' : s === 'risk' ? 'risk' : 'ok';
+  const badgeT = s === 'failed' ? 'OFFLINE' : s === 'risk' ? 'AT RISK' : 'HEALTHY';
+  let statusTitle = 'STATUS', statusBody = 'No active anomaly. Unit is within expected operating envelope.';
+  if (s === 'risk') { statusTitle = 'STATUS'; statusBody = r.critical.filter(c => c !== 'None').join(' · ') || r.causes.join(' · '); }
+  if (s === 'failed') { statusTitle = 'STATUS'; statusBody = 'Unit offline. Telemetry lost. Replacement required.'; }
+
+  inspBody.innerHTML = `
+    <div class="insp-badge ${badge}">${badgeT}</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:4px">${r.id}</div>
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">${r.name}</div>
+    <div class="insp-status ${badge}"><strong>▲ ${statusTitle}</strong><span>${statusBody}</span></div>
+    <div class="metrics">
+      <div class="metric"><div class="l">Battery</div><div class="v">${r.battery}%</div><div class="mb"><i class="bat" style="width:${r.battery}%"></i></div></div>
+      <div class="metric"><div class="l">Thermal</div><div class="v">${r.thermal}°C</div><div class="mb"><i class="thm" style="width:${Math.min(100,r.thermal*1.5)}%"></i></div></div>
+      <div class="metric"><div class="l">Load</div><div class="v">${r.load}%</div><div class="mb"><i class="lod" style="width:${r.load}%"></i></div></div>
+      <div class="metric"><div class="l">Comms</div><div class="v">${r.comms}%</div><div class="mb"><i class="com" style="width:${r.comms}%"></i></div></div>
+    </div>
+    <div class="hist-title">Battery history · 30 min</div>
+    <div class="hist">${r.hist.map(h => '<span style="height:' + (h/100*36) + 'px"></span>').join('')}</div>
+    <div class="info-row"><span class="l">Assigned task</span><span class="v">${r.task}</span></div>
+    <div class="info-row"><span class="l">Capability</span><span class="v">${r.capability}</span></div>
+    <div class="info-row"><span class="l">Role</span><span class="v">${r.role}</span></div>
+    <div class="info-row"><span class="l">Survival</span><span class="v">${surv(i)}%</span></div>
+    <div class="info-row"><span class="l">Replacement</span><span class="v">${r.replace}</span></div>
+    <button class="focus-btn" onclick="focusRobot3D(${i})">◎ Focus unit</button>
+    ${s !== 'ok' ? `<button class="btn danger block" style="margin-top:8px" onclick="document.querySelector('.nav button[data-v=command]').click();selectRobot(${i})">Open full analysis</button>` : ''}`;
+}
+
+function showDrawer(i) {
+  const r = robots[i], s = st(i);
+  const myJobs = jobsOf(r.id);
+  const backups = robots.filter((x, j) => x.id !== r.id && st(j) === 'ok');
+  drawer.classList.add('on');
+  drawer.innerHTML = `
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+      <img src="${r.img}" style="width:88px;height:88px;object-fit:cover;border-radius:10px;border:1px solid var(--border)" onerror="this.src='https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=280&fit=crop'">
+      <div>
+        <div style="font-size:18px;font-weight:700">${r.id} — ${r.name}</div>
+        <div style="color:var(--muted);font-size:13px;margin-top:4px">Task: <b style="color:var(--text)">${r.task}</b></div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          ${s!=='failed'?`<button class="btn danger sm" onclick="failRobot(${i})">Mark offline</button>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="g g3" style="margin-bottom:12px">
+      <div class="card"><h3>Health</h3><p>HP ${r.health}% · Bat ${r.battery}% · ${r.thermal}°C · Load ${r.load}%</p></div>
+      <div class="card"><h3>Critical</h3><p>${(s==='failed'?['Offline — replace']:r.critical).join(' · ')}</p></div>
+      <div class="card"><h3>Survival / replace</h3><p>${surv(i)}% · ${r.replace}</p></div>
+    </div>
+    <div class="assign-box">
+      <h4>Manual work assign — you choose backup</h4>
+      ${myJobs.length ? myJobs.map(j => `<div class="job-row"><label><input type="checkbox" class="jc" value="${j.id}" checked> <b>${j.id}</b> ${j.title}</label><span class="mono" style="color:var(--muted)">${j.progress}%</span></div>`).join('') : '<p style="color:var(--muted);font-size:13px">No jobs on this unit.</p>'}
+      <div class="assign-row">
+        <select id="bkSel">${backups.length ? backups.map(b => `<option value="${b.id}">${b.id} · ${b.name}</option>`).join('') : '<option value="">No healthy backup</option>'}</select>
+        <button class="btn pri" ${backups.length?'':'disabled'} onclick="assignWork('${r.id}')">Assign selected</button>
+      </div>
+    </div>`;
+}
+
+window.assignWork = function(fromId) {
+  const to = document.getElementById('bkSel')?.value;
+  if (!to) { toast('Pick backup', 'Select a healthy robot'); return; }
+  const ids = [...document.querySelectorAll('.jc:checked')].map(c => c.value);
+  if (!ids.length) { toast('Select jobs', 'Check at least one'); return; }
+  let n = 0;
+  jobs.forEach(j => { if (j.robot === fromId && ids.includes(j.id)) { j.robot = to; n++; } });
+  migrated += n;
+  log('Manual assign', n + ' job(s) ' + fromId + ' → ' + to);
+  toast('Assigned', n + ' job(s) → ' + to);
+  updateAll();
+  selectRobot(robots.findIndex(r => r.id === fromId));
+};
+
+function renderFleet() {
+  fleetBody.innerHTML = robots.map((r,i) => {
+    const s = st(i);
+    const sClass = s === 'risk' || s === 'failed' ? 'status-risk' : 'status-ok';
+    const spd = r.taskSpeed || 1;
+    const baseMin = 12;
+    const eta = Math.max(1, Math.round(baseMin / spd));
+    const prob = Math.min(99, Math.round(70 + spd * 12));
+    return `<tr>
+      <td style="cursor:pointer" onclick="selectRobot(${i});document.querySelector('.nav button[data-v=command]').click()"><b>${r.id}</b> ${r.name}</td>
+      <td class="${sClass}">${s.toUpperCase()}</td>
+      <td>${r.health}%</td><td>${r.battery}%</td>
+      <td>${r.task}</td><td>${r.zone}</td>
+      <td>
+        <div class="speed-ctrl">
+          <button class="btn sm" onclick="event.stopPropagation();setTaskSpeed(${i}, ${(spd-0.25).toFixed(2)})">−</button>
+          <input type="range" min="0.25" max="2.5" step="0.25" value="${spd}" oninput="setTaskSpeed(${i}, this.value)" onclick="event.stopPropagation()">
+          <button class="btn sm" onclick="event.stopPropagation();setTaskSpeed(${i}, ${(spd+0.25).toFixed(2)})">+</button>
+          <span class="eta">${spd}x · ~${eta}m · ${prob}% on-time</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+window.setTaskSpeed = function(i, v) {
+  v = Math.max(0.25, Math.min(2.5, parseFloat(v)));
+  robots[i].taskSpeed = Math.round(v * 100) / 100;
+  const eta = Math.max(1, Math.round(12 / robots[i].taskSpeed));
+  const prob = Math.min(99, Math.round(70 + robots[i].taskSpeed * 12));
+  log('Task speed', robots[i].id + ' → ' + robots[i].taskSpeed + 'x · ETA ~' + eta + 'm · ' + prob + '% on-time');
+  renderFleet();
+};
+function renderDeps() {
+  depList.innerHTML = [
+    ['R-01','TASK-A, RESOURCE'],['R-02','RESOURCE'],['RESOURCE','TASK-A, TASK-B, R-03'],
+    ['TASK-A','TASK-B'],['R-03','TASK-B']
+  ].map(([a,b]) => `<div class="dep-row"><span class="src">${a}</span><span style="color:var(--muted)">→ ${b}</span></div>`).join('');
+}
+const PLAN_DATA = [
+  { id:'min', t:'Minimal migration', e:'~1.2s',
+    d:'Moves only jobs that belong to offline units onto the nearest healthy backup. Other robots keep their current queues. Best when a single unit fails and you want the smallest change on the floor.',
+    steps:['Identify offline unit jobs','Pick nearest healthy backup','Transfer job tokens','Resume queues'] },
+  { id:'full', t:'Full rebalance', e:'~2.4s',
+    d:'Redistributes all active work across every healthy robot by load. Use when several units are stressed or after a cascade so no single unit stays overloaded.',
+    steps:['Score healthy capacity','Split open jobs','Assign by lowest load','Verify completion windows'] },
+  { id:'crit', t:'Critical shield', e:'~1.8s',
+    d:'Locks priority missions on the strongest healthy units and parks non-critical tasks. Implements only after you confirm which missions are critical.',
+    steps:['Tag critical missions','Pin to top-health units','Park non-critical jobs','Notify operator'] },
+  { id:'freeze', t:'Cascade freeze', e:'~0.8s',
+    d:'Immediately pauses non-critical dependency chains so failure cannot spread. Does not move jobs until you unfreeze or pick another plan.',
+    steps:['Halt non-critical edges','Hold dependent tasks','Keep critical paths warm','Await operator plan'] },
+];
+function renderPlans() {
+  planGrid.innerHTML = PLAN_DATA.map(p => `
+    <div class="card">
+      <h3 style="margin-bottom:8px">${p.t}</h3>
+      <p style="color:var(--muted);font-size:13.5px;line-height:1.55;margin-bottom:10px">${p.d}</p>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:10px"><b style="color:var(--text)">Before implement:</b> ${p.steps.join(' → ')}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="mono" style="color:var(--muted);font-size:12px">ETA ${p.e}</span>
+        <button class="btn pri sm" onclick="toast('Plan armed','${p.t}');log('Plan','${p.t} armed')">Activate</button>
+      </div>
+    </div>`).join('');
+  updateSuggest();
+}
+window.updateSuggest = function() {
+  const focus = document.getElementById('suggestFocus')?.value || 'safe';
+  const map = { speed:'freeze', safe:'min', critical:'crit', freeze:'freeze' };
+  const failedN = failed.size;
+  const riskN = robots.filter((_,i)=>st(i)==='risk').length;
+  let pick = map[focus];
+  if (failedN >= 2) pick = focus === 'safe' ? 'full' : pick;
+  if (failedN === 0 && riskN === 0) pick = 'min';
+  const p = PLAN_DATA.find(x => x.id === pick) || PLAN_DATA[0];
+  window.__suggestId = p.id;
+  const stLine = failedN ? (failedN + ' offline, ' + riskN + ' at risk') : (riskN + ' at risk, fleet otherwise nominal');
+  const el = document.getElementById('suggestDetail');
+  const tx = document.getElementById('suggestText');
+  if (tx) tx.textContent = 'Live recommendation for current state (' + stLine + '). Adjust priority focus to change the suggestion.';
+  if (el) el.innerHTML = '<b style="color:var(--cyan)">' + p.t + '</b> · ETA ' + p.e + '<br><br>' + p.d + '<br><br><b style="color:var(--text)">Steps:</b> ' + p.steps.join(' → ');
+};
+window.applySuggest = function() {
+  const p = PLAN_DATA.find(x => x.id === window.__suggestId) || PLAN_DATA[0];
+  toast('Suggested plan', p.t + ' activated');
+  log('Suggested plan', p.t);
+};
+function renderFPA() {
+  const box = document.getElementById('fpaCauses');
+  if (!box) return;
+  const items = robots.map((r,i) => {
+    const s = st(i);
+    if (s === 'ok') return null;
+    const causes = s === 'failed' ? ['Telemetry lost','Health collapse','Tasks interrupted'] : r.causes;
+    return `<div class="fpa-item"><b>${r.id} · ${r.name}</b> — ${s.toUpperCase()}<br><span style="color:var(--muted)">Causes: ${causes.join('; ')}</span></div>`;
+  }).filter(Boolean);
+  box.innerHTML = items.length ? items.join('') : '<div class="fpa-item" style="color:var(--muted)">No active failures or at-risk units. Graph is nominal.</div>';
+  const riskZones = {};
+  robots.forEach((r,i) => { if (st(i) !== 'ok') riskZones[r.zone] = (riskZones[r.zone]||0)+1; });
+  const zoneTxt = Object.keys(riskZones).length
+    ? 'Concentration in zone(s): ' + Object.entries(riskZones).map(([z,c]) => z + ' (' + c + ')').join(', ') + '.'
+    : 'No zone concentration — failures are not clustered.';
+  const batt = robots.filter(r => r.battery < 55).length;
+  const pattern = document.getElementById('fpaPattern');
+  if (pattern) pattern.innerHTML = zoneTxt + '<br><br>' +
+    (batt ? 'Battery stress pattern: ' + batt + ' unit(s) under 55% — shared power-cycle risk if not staggered.' : 'No shared battery-stress pattern right now.') +
+    '<br><br>Historical hint: C-zone pickers (R-05/R-06) show repeated thermal + load coupling under peak SKU lists.';
+  const future = document.getElementById('fpaFuture');
+  if (future) {
+    const risk = robots.filter((_,i)=>st(i)==='risk').length;
+    const fail = failed.size;
+    if (!fail && !risk) future.innerHTML = 'No cascade expected in the next window. Keep standard monitoring.';
+    else future.innerHTML = (fail ? fail + ' offline unit(s) can starve dependent tasks (see Dependency Edges on the twin). ' : '') +
+      (risk ? risk + ' at-risk unit(s) may tip offline within the current shift if load is not shed. ' : '') +
+      'Downstream robots on shared HUB/resource edges are most exposed. Use Recovery Plans before impact widens.';
+  }
+}
+function renderEffCharts() {
+  const el = document.getElementById('effCharts');
+  if (!el) return;
+  el.innerHTML = robots.map((r,i) => {
+    const s = st(i);
+    const base = Math.max(20, Math.min(98, r.health - (100 - r.battery) * 0.15));
+    const points = Array.from({length: 12}, (_, k) => {
+      const drift = Math.sin(k * 0.7 + i) * 6;
+      let v = base + drift - (s === 'failed' ? 40 : s === 'risk' ? 12 : 0) - k * (s === 'failed' ? 3 : 0.4);
+      return Math.max(5, Math.min(100, v));
+    });
+    return `<div class="card eff-card"><div class="nm">${r.id} · ${r.name}</div>
+      <div class="eff-bars">${points.map(v => `<i class="${s!=='ok'?'dim':''}" style="height:${v}%"></i>`).join('')}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">efficiency trend</div></div>`;
+  }).join('');
+}
+
+function renderSim() {
+  simBtns.innerHTML = robots.map((r,i) => `<button class="btn sm" onclick="failRobot(${i})">${failed.has(i)?'✓ ':''}Fail ${r.id}</button>`).join('');
+}
+function updateKPIs() {
+  const total = robots.length;
+  const on = total - failed.size;
+  kOn.textContent = on; kOnT.textContent = 'of ' + total;
+  kRisk.textContent = robots.filter((_,i)=>st(i)==='risk').length + failed.size;
+  kMig.textContent = migrated;
+  kSurv.textContent = Math.round(robots.reduce((a,_,i)=>a+surv(i),0)/robots.length) + '%';
+  kComp.textContent = Math.max(76, 98 - failed.size * 4) + '%';
+  alert.classList.toggle('on', failed.size > 0);
+  if (failed.size === 0) {
+    cascadeBox.innerHTML = 'No active failures. Graph is in nominal state.<br>All units healthy. Migration paths idle.';
+  } else {
+    cascadeBox.innerHTML = '<strong style="color:var(--red)">Active:</strong> ' + [...failed].map(i=>robots[i].id).join(', ') +
+      '<br>Cascade depth: ' + (failed.size >= 2 ? 3 : 2) + ' · Use manual assign on unit cards.';
+  }
+}
+function updateAll() {
+  renderRobots(); renderFleet(); renderSim(); updateKPIs();
+  showDrawer(selected); showInspector(selected);
+  renderFPA(); renderEffCharts();
+  if (typeof updateSuggest === 'function') updateSuggest();
+  if (typeof update3DColors === 'function') update3DColors();
+}
+
+window.failRobot = function(i) {
+  if (failed.has(i)) return;
+  failed.add(i); robots[i].health = Math.min(robots[i].health, 15);
+  log(robots[i].id + ' offline', 'Failure injected');
+  toast(robots[i].id + ' offline', 'Assign work from unit panel');
+  updateAll();
+};
+window.emergency = function() {
+  if (!failed.size) { toast('Clear', 'No offline units'); return; }
+  const n = failed.size; migrated += n * 2; failed.clear();
+  robots.forEach((r,i) => r.health = [96,92,89,97,84,81,94,91][i]);
+  log('Emergency recovery', n + ' restored');
+  toast('Recovered', n + ' units online');
+  updateAll();
+};
+window.resetAll = function() {
+  failed.clear(); migrated = 0;
+  robots.forEach((r,i) => {
+    r.health = [96,92,89,97,84,81,94,91][i];
+    r.battery = [86,71,64,88,51,43,76,69][i];
+  });
+  log('Reset', 'Baseline');
+  toast('Reset', 'Fleet baseline');
+  updateAll();
+};
+
+
+window.openAddRobot = function() {
+  const m = document.getElementById('addModal');
+  if (!m) { toast('Error', 'Add form missing'); return; }
+  m.classList.add('on');
+  const n = document.getElementById('newRobotName');
+  const z = document.getElementById('newRobotZone');
+  const t = document.getElementById('newRobotTask');
+  if (n) { n.value = ''; setTimeout(() => n.focus(), 50); }
+  if (z) z.value = 'E1';
+  if (t) t.value = '';
+};
+window.closeAddRobot = function() {
+  document.getElementById('addModal')?.classList.remove('on');
+};
+window.confirmAddRobot = function() {
+  const name = (document.getElementById('newRobotName')?.value || '').trim();
+  if (!name) { toast('Name required', 'Enter a robot name'); return; }
+  const zone = ((document.getElementById('newRobotZone')?.value) || 'E1').trim().toUpperCase() || 'E1';
+  const task = ((document.getElementById('newRobotTask')?.value) || '').trim() || 'Custom assignment';
+  const n = robots.length + 1;
+  const id = 'R-' + String(n).padStart(2, '0');
+  const imgs = [
+    'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=400&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?w=400&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1546776310-eef45dd75d8c?w=400&h=280&fit=crop'
+  ];
+  robots.push({
+    id, name, zone,
+    health: 95, battery: 92, thermal: 36, load: 18, comms: 96,
+    task, capability: 'custom · assigned', role: name,
+    img: imgs[(n - 1) % imgs.length],
+    taskSpeed: 1,
+    causes: ['Newly commissioned — nominal'],
+    survival: 96, critical: ['None'], replace: 'Assign spare later',
+    hist: Array.from({length: 30}, () => 88 + Math.floor(Math.random() * 8))
+  });
+  jobs.push({ id: 'J-' + (200 + n), title: task, robot: id, progress: 5 });
+  closeAddRobot();
+  selected = robots.length - 1;
+  updateAll();
+  if (typeof spawnRobot3D === 'function') {
+    try { spawnRobot3D(robots.length - 1); } catch (err) { console.warn(err); }
+  }
+  log('Unit added', id + ' · ' + name + ' · task: ' + task);
+  toast('Added to fleet', id + ' — ' + name);
+  document.querySelector('.nav button[data-v=command]')?.click();
+};
+
+renderDeps(); renderPlans();
+log('Ready', 'Awaiting sign-in');
+
+/* particles + meteors + hero network + cursor */
+(function(){
+  const c = document.getElementById('particles');
+  const ctx = c.getContext('2d');
+  let w, h, mx = 0.5, my = 0.5, tmx = 0.5, tmy = 0.5;
+  const pts = Array.from({length: 70}, () => ({
+    x: Math.random(), y: Math.random(),
+    vx: (Math.random()-.5)*.00035, vy: (Math.random()-.5)*.00035,
+    r: 1 + Math.random() * 1.2
+  }));
+  function resize(){ w=c.width=innerWidth; h=c.height=innerHeight; }
+  function frame(){
+    mx += (tmx - mx) * 0.04;
+    my += (tmy - my) * 0.04;
+    ctx.clearRect(0,0,w,h);
+    // subtle vignette fill so trails soft
+    ctx.fillStyle = 'rgba(7,17,31,0.22)';
+    ctx.fillRect(0,0,w,h);
+    // parallax offset from cursor
+    const ox = (mx - 0.5) * 40;
+    const oy = (my - 0.5) * 30;
+    pts.forEach(p => {
+      p.x += p.vx + (mx - 0.5) * 0.00002;
+      p.y += p.vy + (my - 0.5) * 0.00002;
+      if (p.x < 0 || p.x > 1) p.vx *= -1;
+      if (p.y < 0 || p.y > 1) p.vy *= -1;
+    });
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const a = pts[i], b = pts[j];
+        const dx = (a.x - b.x) * w, dy = (a.y - b.y) * h;
+        const d = Math.hypot(dx, dy);
+        if (d < 150) {
+          ctx.strokeStyle = `rgba(53,215,255,${0.1 * (1 - d / 150)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x * w + ox * a.x, a.y * h + oy * a.y);
+          ctx.lineTo(b.x * w + ox * b.x, b.y * h + oy * b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    pts.forEach(p => {
+      const px = p.x * w + ox * p.x;
+      const py = p.y * h + oy * p.y;
+      ctx.fillStyle = 'rgba(53,215,255,0.55)';
+      ctx.beginPath();
+      ctx.arc(px, py, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    // soft cursor glow
+    const grd = ctx.createRadialGradient(mx * w, my * h, 0, mx * w, my * h, 180);
+    grd.addColorStop(0, 'rgba(53,215,255,0.06)');
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, w, h);
+    requestAnimationFrame(frame);
+  }
+  addEventListener('mousemove', e => {
+    tmx = e.clientX / innerWidth;
+    tmy = e.clientY / innerHeight;
+  }, { passive: true });
+  addEventListener('resize', resize);
+  resize(); frame();
+
+  /* meteors */
+  const host = document.getElementById('meteors');
+  function spawnMeteor() { /* meteors disabled */ }
+
+  /* hero network brain-like mesh */
+  const heroNet = document.getElementById('heroNet');
+  if (heroNet) {
+    const hc = document.createElement('canvas');
+    heroNet.appendChild(hc);
+    const hctx = hc.getContext('2d');
+    let hw, hh;
+    const nodes = [];
+    function buildNodes() {
+      nodes.length = 0;
+      // approximate brain / cloud shape of points
+      for (let i = 0; i < 90; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const rad = 0.15 + Math.random() * 0.28;
+        // stretch into organic blob
+        const px = 0.5 + Math.cos(ang) * rad * (0.9 + Math.random() * 0.4);
+        const py = 0.48 + Math.sin(ang) * rad * 0.75 * (0.85 + Math.random() * 0.4);
+        nodes.push({
+          x: px, y: py,
+          ox: px, oy: py,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+    function hresize() {
+      hw = hc.width = heroNet.clientWidth;
+      hh = hc.height = heroNet.clientHeight;
+      buildNodes();
+    }
+    let ht = 0;
+    function hframe() {
+      ht += 0.016;
+      hctx.clearRect(0, 0, hw, hh);
+      const cox = (tmx - 0.5) * 50;
+      const coy = (tmy - 0.5) * 40;
+      nodes.forEach(n => {
+        n.x = n.ox + Math.sin(ht + n.phase) * 0.008 + (tmx - 0.5) * 0.02;
+        n.y = n.oy + Math.cos(ht * 0.9 + n.phase) * 0.008 + (tmy - 0.5) * 0.015;
+      });
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          const dx = (a.x - b.x) * hw, dy = (a.y - b.y) * hh;
+          const d = Math.hypot(dx, dy);
+          if (d < 100) {
+            hctx.strokeStyle = `rgba(200,220,240,${0.12 * (1 - d / 100)})`;
+            hctx.beginPath();
+            hctx.moveTo(a.x * hw + cox * 0.3, a.y * hh + coy * 0.3);
+            hctx.lineTo(b.x * hw + cox * 0.3, b.y * hh + coy * 0.3);
+            hctx.stroke();
+          }
+        }
+      }
+      nodes.forEach(n => {
+        hctx.fillStyle = 'rgba(230,240,255,0.7)';
+        hctx.beginPath();
+        hctx.arc(n.x * hw + cox * 0.3, n.y * hh + coy * 0.3, 1.6, 0, Math.PI * 2);
+        hctx.fill();
+      });
+      requestAnimationFrame(hframe);
+    }
+    addEventListener('resize', hresize);
+    hresize();
+    hframe();
+  }
+
+  /* parallax hero content */
+  const heroContent = document.getElementById('heroContent');
+  if (heroContent) {
+    addEventListener('mousemove', e => {
+      if (!document.getElementById('screenIntro')?.classList.contains('on')) return;
+      const px = (e.clientX / innerWidth - 0.5) * 18;
+      const py = (e.clientY / innerHeight - 0.5) * 12;
+      heroContent.style.transform = `translate(${px}px, ${py}px)`;
+    }, { passive: true });
+  }
+})();
+</script>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* Industrial digital twin — automotive cell style (DELMIA-inspired) */
+const layout = {
+  'R-01':[-5.5, -3.2], 'R-02':[-1.5, -3.8], 'R-03':[2.5, -3.0],
+  'R-04':[5.5, -1.0], 'R-05':[-5.0, 1.5], 'R-06':[-1.5, 2.2],
+  'R-07':[2.2, 2.0], 'R-08':[5.2, 3.5]
+};
+
+const canvas = document.getElementById('c3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0xc8ccd0);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xc8ccd0, 28, 55);
+
+const camera = new THREE.PerspectiveCamera(38, 2, 0.1, 100);
+camera.position.set(11, 9, 13);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.maxPolarAngle = Math.PI * 0.45;
+controls.minDistance = 8;
+controls.maxDistance = 36;
+controls.target.set(0, 1.4, 0.5);
+
+/* lighting — factory hall */
+scene.add(new THREE.AmbientLight(0xc8d0d8, 0.55));
+const sun = new THREE.DirectionalLight(0xfff5e8, 1.15);
+sun.position.set(12, 24, 10);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.left = sun.shadow.camera.bottom = -18;
+sun.shadow.camera.right = sun.shadow.camera.top = 18;
+sun.shadow.camera.far = 50;
+sun.shadow.bias = -0.0003;
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0x8a9aaa, 0.35);
+fill.position.set(-10, 12, -8);
+scene.add(fill);
+[[-6, 5, -4], [6, 5, 4], [0, 6, 0]].forEach(([x,y,z]) => {
+  const pl = new THREE.PointLight(0xdde4ee, 0.25, 16);
+  pl.position.set(x, y, z);
+  scene.add(pl);
+});
+
+/* factory floor */
+const floorMat = new THREE.MeshStandardMaterial({ color: 0xd8dce0, roughness: 0.85, metalness: 0.08 });
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(36, 36), floorMat);
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+const grid = new THREE.GridHelper(36, 36, 0x9aa0a6, 0xb8bcc0);
+grid.position.y = 0.02;
+scene.add(grid);
+
+/* materials */
+const matOrange = new THREE.MeshStandardMaterial({ color: 0xb0b4ba, roughness: 0.42, metalness: 0.45 });
+const matOrangeDark = new THREE.MeshStandardMaterial({ color: 0x8a8e96, roughness: 0.45, metalness: 0.4 });
+const matWhite = new THREE.MeshStandardMaterial({ color: 0xd8dce2, roughness: 0.4, metalness: 0.25 });
+const matGray = new THREE.MeshStandardMaterial({ color: 0x5a5e66, roughness: 0.55, metalness: 0.4 });
+const matDark = new THREE.MeshStandardMaterial({ color: 0x2e3238, roughness: 0.6, metalness: 0.3 });
+const matYellow = new THREE.MeshStandardMaterial({ color: 0xf0c000, roughness: 0.5, metalness: 0.2 });
+const matMetal = new THREE.MeshStandardMaterial({ color: 0x8a9098, roughness: 0.35, metalness: 0.7 });
+const matRisk = new THREE.MeshStandardMaterial({ color: 0xd4a017, roughness: 0.4, metalness: 0.3, emissive: 0x443300, emissiveIntensity: 0.2 });
+const matFail = new THREE.MeshStandardMaterial({ color: 0x8b3030, roughness: 0.45, metalness: 0.25, emissive: 0x440000, emissiveIntensity: 0.25 });
+
+/* safety fencing */
+function fence(x1, z1, x2, z2, h = 1.8) {
+  const dx = x2 - x1, dz = z2 - z1;
+  const len = Math.hypot(dx, dz);
+  const midX = (x1 + x2) / 2, midZ = (z1 + z2) / 2;
+  const bar = new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.06), matDark);
+  bar.position.set(midX, h, midZ);
+  bar.rotation.y = Math.atan2(dx, dz);
+  scene.add(bar);
+  const bar2 = bar.clone(); bar2.position.y = h * 0.55; scene.add(bar2);
+  for (let i = 0; i <= 6; i++) {
+    const t = i / 6;
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.08, h, 0.08), matDark);
+    post.position.set(x1 + dx * t, h / 2, z1 + dz * t);
+    post.castShadow = true;
+    scene.add(post);
+  }
+}
+fence(-10, -8, 10, -8);
+fence(-10, 8, 10, 8);
+fence(-10, -8, -10, 8);
+fence(10, -8, 10, 8);
+
+/* yellow safety barriers */
+[[-8, -6], [8, -6], [-8, 6], [8, 6]].forEach(([x, z]) => {
+  const b = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.9, 0.25), matYellow);
+  b.position.set(x, 0.45, z);
+  b.castShadow = true;
+  scene.add(b);
+});
+
+/* work tables (white elevated) */
+[[-3, -2.5], [1, -2.2], [4.5, 0.5], [-3.5, 2.5]].forEach(([x, z], i) => {
+  const leg = matGray;
+  const top = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 1.6), matWhite);
+  top.position.set(x, 1.05, z);
+  top.castShadow = true;
+  top.receiveShadow = true;
+  scene.add(top);
+  [[-0.9, -0.55], [0.9, -0.55], [-0.9, 0.55], [0.9, 0.55]].forEach(([lx, lz]) => {
+    const p = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 0.12), leg);
+    p.position.set(x + lx, 0.5, z + lz);
+    p.castShadow = true;
+    scene.add(p);
+  });
+  // metal panel on table
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.9), matMetal);
+  panel.position.set(x, 1.15, z);
+  panel.castShadow = true;
+  scene.add(panel);
+});
+
+/* control cabinets */
+[[-9, 0], [9, 2]].forEach(([x, z]) => {
+  const cab = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.2, 0.8), matGray);
+  cab.position.set(x, 1.1, z);
+  cab.castShadow = true;
+  scene.add(cab);
+  const face = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.9, 0.05), matDark);
+  face.position.set(x + (x < 0 ? 0.55 : -0.55), 1.4, z);
+  scene.add(face);
+});
+
+/* KUKA-style industrial robot */
+function makeIndustrialRobot(useWhite = false) {
+  const g = new THREE.Group();
+  const baseCol = useWhite ? matWhite : matOrange;
+  const linkCol = useWhite ? matWhite : matOrangeDark;
+
+  // base
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 0.35, 16), matGray);
+  base.position.y = 0.18;
+  base.castShadow = true;
+  base.receiveShadow = true;
+  g.add(base);
+
+  // swivel
+  const swivel = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 0.45, 12), baseCol.clone());
+  swivel.position.y = 0.55;
+  swivel.castShadow = true;
+  g.add(swivel);
+
+  // lower arm
+  const lower = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.9, 0.35), linkCol.clone());
+  lower.position.set(0, 1.15, 0.1);
+  lower.castShadow = true;
+  g.add(lower);
+
+  // elbow joint
+  const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 10), baseCol.clone());
+  elbow.position.set(0, 1.65, 0.15);
+  elbow.castShadow = true;
+  g.add(elbow);
+
+  // upper arm
+  const upper = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.75, 0.28), linkCol.clone());
+  upper.position.set(0.15, 2.05, 0.25);
+  upper.rotation.z = -0.4;
+  upper.castShadow = true;
+  g.add(upper);
+
+  // wrist
+  const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.35, 10), baseCol.clone());
+  wrist.position.set(0.35, 2.4, 0.4);
+  wrist.rotation.z = Math.PI / 2;
+  wrist.castShadow = true;
+  g.add(wrist);
+
+  // tool
+  const tool = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.15, 0.35), matDark);
+  tool.position.set(0.5, 2.4, 0.55);
+  tool.castShadow = true;
+  g.add(tool);
+
+  // status ring on floor
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.75, 0.9, 32),
+    new THREE.MeshBasicMaterial({ color: 0x36e29a, transparent: true, opacity: 0.55, side: THREE.DoubleSide })
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.03;
+  g.add(ring);
+
+  g.userData.parts = [swivel, lower, elbow, upper, wrist];
+  g.userData.ring = ring;
+  g.userData.arm = upper;
+  return g;
+}
+
+const meshes = {};
+Object.keys(layout).forEach((id, i) => {
+  const [x, z] = layout[id];
+  const white = i % 3 === 1; // mix orange + white robots
+  const m = makeIndustrialRobot(white);
+  m.position.set(x, 0, z);
+  m.rotation.y = Math.atan2(-x, -z) * 0.3 + (Math.random() - 0.5) * 0.5;
+  m.userData.id = id;
+  m.userData.kind = 'robot';
+  m.userData.index = robots.findIndex(r => r.id === id);
+  scene.add(m);
+  meshes[id] = m;
+
+  // label
+  const c = document.createElement('canvas');
+  c.width = 128; c.height = 40;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(20,22,26,0.85)';
+  ctx.beginPath(); ctx.roundRect(6, 6, 116, 28, 4); ctx.fill();
+  ctx.fillStyle = '#e8f1fb';
+  ctx.font = 'bold 16px Inter, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(id, 64, 22);
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+  spr.position.set(x, 3.0, z);
+  spr.scale.set(1.5, 0.45, 1);
+  scene.add(spr);
+  m.userData.label = spr;
+});
+
+/* hanging cable hints */
+[[ -2, 3, -1], [3, 3, 1], [0, 3.2, 2]].forEach(([x, y, z]) => {
+  const cable = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.03, 0.03, 2.5, 6),
+    matDark
+  );
+  cable.position.set(x, y, z);
+  scene.add(cable);
+});
+
+const motion = {};
+const extraSlots = [
+  [-7, -1], [7, -2], [-6, 4], [6, 5.5], [0, 5], [-3, -5], [3, -5], [0, -6]
+];
+let slotIdx = 0;
+
+Object.keys(layout).forEach(id => {
+  motion[id] = {
+    phase: Math.random() * Math.PI * 2,
+    speed: 1.0 + Math.random() * 0.8,
+    walk: 0.15 + Math.random() * 0.1,
+    origin: layout[id].slice()
+  };
+});
+
+function animateArms(t) {
+  Object.keys(meshes).forEach(id => {
+    const m = meshes[id];
+    const mot = motion[id];
+    if (!m || !mot) return;
+    const idx = m.userData.index;
+    if (failed.has(idx)) {
+      // failed: arms hang, ring red already
+      if (m.userData.arm) m.userData.arm.rotation.z = -0.1;
+      return;
+    }
+    // arm sweep
+    if (m.userData.arm) {
+      m.userData.arm.rotation.z = -0.45 + Math.sin(t * mot.speed + mot.phase) * 0.4;
+    }
+    // base rotate
+    m.rotation.y = mot.phase * 0.2 + Math.sin(t * 0.35 + mot.phase) * 0.5;
+    // small patrol circle
+    const ox = mot.origin[0], oz = mot.origin[1];
+    m.position.x = ox + Math.cos(t * mot.walk + mot.phase) * 0.55;
+    m.position.z = oz + Math.sin(t * mot.walk + mot.phase) * 0.55;
+  });
+}
+
+window.spawnRobot3D = function(index) {
+  const r = robots[index];
+  if (!r || meshes[r.id]) return;
+  const slot = extraSlots[slotIdx % extraSlots.length];
+  slotIdx++;
+  layout[r.id] = slot;
+  const m = makeIndustrialRobot(index % 2 === 0);
+  m.position.set(slot[0], 0, slot[1]);
+  m.userData.id = r.id;
+  m.userData.kind = 'robot';
+  m.userData.index = index;
+  scene.add(m);
+  meshes[r.id] = m;
+  motion[r.id] = {
+    phase: Math.random() * Math.PI * 2,
+    speed: 1.0 + Math.random() * 0.8,
+    walk: 0.15 + Math.random() * 0.1,
+    origin: slot.slice()
+  };
+  // label
+  const c = document.createElement('canvas');
+  c.width = 160; c.height = 40;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(20,22,26,0.9)';
+  ctx.beginPath(); ctx.roundRect(4, 6, 152, 28, 4); ctx.fill();
+  ctx.fillStyle = '#e8f1fb';
+  ctx.font = 'bold 14px Inter, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(r.id + ' ' + r.name.slice(0, 12), 80, 22);
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+  spr.position.set(slot[0], 3.0, slot[1]);
+  spr.scale.set(2.0, 0.5, 1);
+  scene.add(spr);
+  m.userData.label = spr;
+  update3DColors();
+  focusRobot3D(index);
+};
+
+window.update3DColors = function() {
+  robots.forEach((r, i) => {
+    const m = meshes[r.id];
+    if (!m) return;
+    let ringC = 0x9aa3ad; // minimalist
+    let bodyC = 0xb0b4ba;
+    if (failed.has(i)) { ringC = 0xff5470; bodyC = 0xc43040; }
+    else if (st(i) === 'risk') { ringC = 0xd0a040; bodyC = 0xa89870; }
+    if (m.userData.ring) m.userData.ring.material.color.setHex(ringC);
+    m.userData.parts?.forEach(p => {
+      if (p.material && p.material.color) {
+        p.material.color.setHex(bodyC);
+        if (failed.has(i) && p.material.emissive) {
+          p.material.emissive.setHex(0x551010);
+          p.material.emissiveIntensity = 0.25;
+        } else if (p.material.emissive) {
+          p.material.emissive.setHex(0x000000);
+          p.material.emissiveIntensity = 0;
+        }
+      }
+    });
+  });
+};
+
+window.focusRobot3D = function(i) {
+  const m = meshes[robots[i].id];
+  if (!m) return;
+  controls.target.set(m.position.x, 1.2, m.position.z);
+  camera.position.set(m.position.x + 5, 9, m.position.z + 7);
+  Object.values(meshes).forEach(x => x.scale.setScalar(1));
+  m.scale.setScalar(1.12);
+};
+
+const ray = new THREE.Raycaster();
+const ptr = new THREE.Vector2();
+canvas.addEventListener('pointerdown', e => {
+  const rect = canvas.getBoundingClientRect();
+  ptr.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  ray.setFromCamera(ptr, camera);
+  const hits = ray.intersectObjects(Object.values(meshes), true);
+  if (!hits.length) return;
+  let o = hits[0].object;
+  while (o && !o.userData?.id) o = o.parent;
+  if (o?.userData?.kind === 'robot') selectRobot(o.userData.index);
+});
+
+window.resetCam = () => { camera.position.set(11, 9, 13); controls.target.set(0, 1.4, 0.5); };
+window.boostMove = () => {
+  Object.values(motion).forEach(m => m.speed = 2.2);
+  setTimeout(() => Object.values(motion).forEach(m => m.speed = 0.8 + Math.random() * 0.6), 4000);
+  toast('Animate', 'Arms in motion');
+};
+
+window.onResize3D = function() {
+  const p = canvas.parentElement;
+  if (!p || p.clientWidth < 20) return;
+  camera.aspect = p.clientWidth / p.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(p.clientWidth, p.clientHeight, false);
+};
+addEventListener('resize', onResize3D);
+
+let last = performance.now();
+function tick(t) {
+  requestAnimationFrame(tick);
+  const dt = Math.min(0.05, (t - last) / 1000);
+  last = t;
+  animateArms(t * 0.001);
+  // label follow
+  Object.values(meshes).forEach(m => {
+    if (m.userData.label) {
+      m.userData.label.position.x = m.position.x;
+      m.userData.label.position.z = m.position.z;
+    }
+    if (m.userData.ring && !failed.has(m.userData.index)) {
+      const s = 1 + Math.sin(t * 0.002 + m.userData.index) * 0.05;
+      m.userData.ring.scale.set(s, s, s);
+    }
+  });
+  controls.update();
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(tick);
+update3DColors();
+</script>
+</body>
+</html>
