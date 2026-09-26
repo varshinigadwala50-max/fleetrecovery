@@ -2,8 +2,8 @@
 
 Interested in exploring our website? You can use the demo credentials below:
 
-**Username:** demo  
-**Password:** 123456
+**Username:** hackfusion  
+**Password:** yoi time
 
 👉 Open the live website: [Fleet Recovery](YOUR-WEBSITE-LINK)
 
